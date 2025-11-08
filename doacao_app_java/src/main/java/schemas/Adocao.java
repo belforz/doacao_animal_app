@@ -11,4 +11,5 @@ public class Adocao {
     private String termos;
     private ProcessoAdocao processo;
     private List<SuportePosAdocao> suportes = new ArrayList<>();
+    private Integer id_processo;
 }

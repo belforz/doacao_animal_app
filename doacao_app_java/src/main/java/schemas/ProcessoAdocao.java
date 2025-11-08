@@ -11,7 +11,7 @@ public class ProcessoAdocao {
     private StatusProcesso status;
     private LocalDate dataIncio;
     private List<EtapaProcesso> etapas = new ArrayList<>();
-    private List<Mensagem> mensgens = new ArrayList<>();
+    private List<Mensagem> mensagems = new ArrayList<>();
 
     public void adicionarEtapa(EtapaProcesso etapa) {
         this.etapas.add(etapa);

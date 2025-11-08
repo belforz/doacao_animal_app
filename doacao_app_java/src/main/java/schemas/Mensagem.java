@@ -8,6 +8,24 @@ public class Mensagem {
     private String conteudo;
     private Integer idRemetente;
     private Integer idDestinario;
+    private String tipoRemetente;
+    private String tipoDestinario;
+
+    public String getTipoRemetente() {
+        return tipoRemetente;
+    }
+
+    public void setTipoRemetente(String tipoRemetente) {
+        this.tipoRemetente = tipoRemetente;
+    }
+
+    public String getTipoDestinario() {
+        return tipoDestinario;
+    }
+
+    public void setTipoDestinario(String tipoDestinario) {
+        this.tipoDestinario = tipoDestinario;
+    }
 
     public Integer getIdMensagem() {
         return idMensagem;
