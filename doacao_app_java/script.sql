@@ -61,7 +61,7 @@ CREATE TABLE ProcessoAdocao (
     id_animal INT NOT NULL,
     id_adotante INT NOT NULL,
     status VARCHAR(255),
-    dataIncio DATETIME,
+    dataInicio DATETIME,
     FOREIGN KEY (id_animal) REFERENCES Animal(idAnimal) ON DELETE CASCADE,
     FOREIGN KEY (id_adotante) REFERENCES Adotante(idAdotante) ON DELETE CASCADE
 );
@@ -251,7 +251,7 @@ BEGIN
     'historicoSaude', OLD.historicoSaude,
     'nome',           OLD.nome,
     'descricao',      OLD.descricao,
-    'esEspecial',     OLD.esEspecial,
+    'esEspecial',     OLD.especial,
     'idade',          OLD.idade,
     'sexo',           OLD.sexo,
     'status',         OLD.status,
@@ -266,7 +266,7 @@ BEGIN
     'historicoSaude', NEW.historicoSaude,
     'nome',           NEW.nome,
     'descricao',      NEW.descricao,
-    'esEspecial',     NEW.esEspecial,
+    'esEspecial',     NEW.especial,
     'idade',          NEW.idade,
     'sexo',           NEW.sexo,
     'status',         NEW.status,
@@ -311,13 +311,12 @@ BEGIN
   DECLARE oldData JSON;
   DECLARE newData JSON;
 
-  -- Mantido "dataIncio" conforme seu schema
   SET oldData = JSON_OBJECT(
     'idPAdocao',  OLD.idPAdocao,
     'id_animal',  OLD.id_animal,
     'id_adotante',OLD.id_adotante,
     'status',     OLD.status,
-    'dataIncio',  OLD.dataIncio
+    'dataInicio',  OLD.dataInicio
   );
 
   SET newData = JSON_OBJECT(
@@ -325,7 +324,7 @@ BEGIN
     'id_animal',  NEW.id_animal,
     'id_adotante',NEW.id_adotante,
     'status',     NEW.status,
-    'dataIncio',  NEW.dataIncio
+    'dataInicio',  NEW.dataInicio
   );
 
   INSERT INTO LogAuditoriaUpdate (dataRegistro, tabelaModificada, registroAnterior, registroNovo)
@@ -344,14 +343,18 @@ BEGIN
     'id',           OLD.id,
     'data',         OLD.data,
     'observacoes',  OLD.observacoes,
-    'id_processo' , OLD.id_processo
+    'id_processo' , OLD.id_processo,
+    'statusEtapa',  OLD.statusEtapa,
+    'tipoEtapa',    OLD.tipoEtapa
   );
 
   SET newData = JSON_OBJECT(
     'id',           NEW.id,
     'data',         NEW.data,
     'observacoes',  NEW.observacoes,
-    'id_processo' , NEW.id_processo
+    'id_processo' , NEW.id_processo,
+    'statusEtapa',  NEW.statusEtapa,
+    'tipoEtapa',    NEW.tipoEtapa
   );
 
   INSERT INTO LogAuditoriaUpdate (dataRegistro, tabelaModificada, registroAnterior, registroNovo)
@@ -469,7 +472,6 @@ BEGIN
   VALUES (NOW(), 'processo_mensagem', oldData, newData);
 end;
 
-show triggers;
 -- Inserções
 
 -- Protetores
@@ -568,7 +570,7 @@ INSERT INTO FotoAnimal (urlAnimal, descricaoFoto, idAnimal) VALUES
 ('http://example.com/piu1.jpg', 'Piu cantando', 5);
 
 -- Processos de Adoção
-INSERT INTO ProcessoAdocao (id_animal, id_adotante, status, dataIncio) VALUES
+INSERT INTO ProcessoAdocao (id_animal, id_adotante, status, dataInicio) VALUES
 (1, 1, 'APROVADO', '2023-01-01 10:00:00'),
 (2, 2, 'ENTREVISTA', '2023-02-01 11:00:00'),
 (3, 3, 'TRIAGEM', '2023-03-01 12:00:00'),
@@ -591,27 +593,27 @@ INSERT INTO ProcessoAdocao (id_animal, id_adotante, status, dataIncio) VALUES
 (20, 20, 'VISITA_DOMICILIAR', '2024-08-01 23:00:00');
 
 -- Etapas de Processo
-INSERT INTO EtapaProcesso (data, observacoes, id_processo) VALUES
-('2023-01-02 12:00:00', 'Entrevista inicial', 1),
-('2023-01-03 13:00:00', 'Visita domiciliar', 1),
-('2023-02-02 14:00:00', 'Triagem concluída', 2),
-('2023-03-02 15:00:00', 'Visita realizada', 3),
-('2023-04-02 16:00:00', 'Contrato assinado', 4),
-('2024-09-01 10:00:00', 'Nova etapa iniciada', 5),
-('2024-10-01 11:00:00', 'Revisão de documentos', 6),
-('2024-11-01 12:00:00', 'Aprovação pendente', 7),
-('2024-12-01 13:00:00', 'Entrevista agendada', 8),
-('2025-01-01 14:00:00', 'Visita confirmada', 9),
-('2025-02-01 15:00:00', 'Contrato preparado', 10),
-('2025-03-01 16:00:00', 'Finalização', 11),
-('2025-04-01 17:00:00', 'Acompanhamento pós', 12),
-('2025-05-01 18:00:00', 'Encerramento', 13),
-('2025-06-01 19:00:00', 'Feedback coletado', 14),
-('2025-07-01 20:00:00', 'Nova solicitação', 15),
-('2025-08-01 21:00:00', 'Avaliação inicial', 16),
-('2025-09-01 22:00:00', 'Documentação revisada', 17),
-('2025-10-01 23:00:00', 'Aprovação final', 18),
-('2025-11-01 00:00:00', 'Conclusão do processo', 19);
+INSERT INTO EtapaProcesso (data, observacoes, id_processo, statusEtapa, tipoEtapa) VALUES
+('2023-01-02 12:00:00', 'Entrevista inicial', 1, 'PENDENTE', 'ENTREVISTA'),
+('2023-01-03 13:00:00', 'Visita domiciliar', 1, 'CONCLUIDA', 'VISITA'),
+('2023-02-02 14:00:00', 'Triagem concluída', 2, 'CONCLUIDA', 'TRIAGEM'),
+('2023-03-02 15:00:00', 'Visita realizada', 3, 'CONCLUIDA', 'VISITA'),
+('2023-04-02 16:00:00', 'Contrato assinado', 4, 'CONCLUIDA', 'CONTRATO'),
+('2024-09-01 10:00:00', 'Nova etapa iniciada', 5, 'PENDENTE', 'ENTREVISTA'),
+('2024-10-01 11:00:00', 'Revisão de documentos', 6, 'PENDENTE', 'TRIAGEM'),
+('2024-11-01 12:00:00', 'Aprovação pendente', 7, 'PENDENTE', 'APROVACAO'),
+('2024-12-01 13:00:00', 'Entrevista agendada', 8, 'PENDENTE', 'ENTREVISTA'),
+('2025-01-01 14:00:00', 'Visita confirmada', 9, 'PENDENTE', 'VISITA'),
+('2025-02-01 15:00:00', 'Contrato preparado', 10, 'PENDENTE', 'CONTRATO'),
+('2025-03-01 16:00:00', 'Finalização', 11, 'CONCLUIDA', 'FINALIZACAO'),
+('2025-04-01 17:00:00', 'Acompanhamento pós', 12, 'PENDENTE', 'ACOMPANHAMENTO'),
+('2025-05-01 18:00:00', 'Encerramento', 13, 'CONCLUIDA', 'ENCERRAMENTO'),
+('2025-06-01 19:00:00', 'Feedback coletado', 14, 'CONCLUIDA', 'FEEDBACK'),
+('2025-07-01 20:00:00', 'Nova solicitação', 15, 'PENDENTE', 'SOLICITACAO'),
+('2025-08-01 21:00:00', 'Avaliação inicial', 16, 'PENDENTE', 'AVALIACAO'),
+('2025-09-01 22:00:00', 'Documentação revisada', 17, 'PENDENTE', 'DOCUMENTACAO'),
+('2025-10-01 23:00:00', 'Aprovação final', 18, 'CONCLUIDA', 'APROVACAO'),
+('2025-11-01 00:00:00', 'Conclusão do processo', 19, 'CONCLUIDA', 'CONCLUSAO');
 
 -- Mensagens
 INSERT INTO Mensagem (dataMensagem, conteudo, idRemetente, tipoRemetente, idDestinatario, tipoDestinatario, id_processo) VALUES
