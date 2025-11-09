@@ -10,6 +10,27 @@ public class Mensagem {
     private Integer idDestinario;
     private String tipoRemetente;
     private String tipoDestinario;
+    private ProcessoAdocao processoAdocao;
+    private Integer id_processo;
+
+    public Mensagem(java.sql.Date dataMensagem, String conteudo, int idRemetente, int idDestinatario, String tipoRemetente, String tipoDestinatario, int idProcesso) {
+        this.dataMensagem = dataMensagem;
+        this.conteudo = conteudo;
+        this.idRemetente = idRemetente;
+        this.idDestinario = idDestinatario;
+        this.tipoRemetente = tipoRemetente;
+        this.tipoDestinario = tipoDestinatario;
+        this.processoAdocao = new ProcessoAdocao();
+        this.processoAdocao.setIdPAdocao(idProcesso);
+    }
+
+    public ProcessoAdocao getProcessoAdocao() {
+        return processoAdocao;
+    }
+
+    public void setProcessoAdocao(ProcessoAdocao processoAdocao) {
+        this.processoAdocao = processoAdocao;
+    }
 
     public String getTipoRemetente() {
         return tipoRemetente;
@@ -66,5 +87,12 @@ public class Mensagem {
     public void setIdDestinario(Integer idDestinario) {
         this.idDestinario = idDestinario;
     }
-}
 
+    public Integer getId_processo() {
+        return id_processo;
+    }
+
+    public void setId_processo(Integer id_processo) {
+        this.id_processo = id_processo;
+    }
+}

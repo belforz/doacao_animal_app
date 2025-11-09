@@ -15,8 +15,39 @@ public class Animal {
     private Integer idade;
     private Character sexo;
     private String status;
-    private Protetor dono;
+    private Protetor protetor;
     private List<FotoAnimal> fotoAnimal = new ArrayList<>();
+
+    public Animal(int idAnimal, String especie, String raca, String temperamento, String historicoSaude, String nome, String descricao, boolean esEspecial, int idade, char sexo, String status, int idProtetor) {
+        this.id = idAnimal;
+        this.especie = especie;
+        this.raca = raca;
+        this.temperamento = temperamento;
+        this.historicoSaude = historicoSaude;
+        this.nome = nome;
+        this.descricao = descricao;
+        this.esEspecial = esEspecial;
+        this.idade = idade;
+        this.sexo = sexo;
+        this.status = status;
+        this.protetor = new Protetor(idProtetor, "", "", "", "", "", "", "");
+    }
+
+    public Protetor getProtetor() {
+        return protetor;
+    }
+
+    public void setProtetor(Protetor protetor) {
+        this.protetor = protetor;
+    }
+
+    public List<FotoAnimal> getFotoAnimal() {
+        return fotoAnimal;
+    }
+
+    public void setFotoAnimal(List<FotoAnimal> fotoAnimal) {
+        this.fotoAnimal = fotoAnimal;
+    }
 
     public void addFotoAnimal(FotoAnimal foto){
         this.fotoAnimal.add(foto);
