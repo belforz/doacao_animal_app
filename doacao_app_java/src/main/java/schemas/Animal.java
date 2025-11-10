@@ -18,7 +18,7 @@ public class Animal {
     private Protetor protetor;
     private List<FotoAnimal> fotoAnimal = new ArrayList<>();
 
-    public Animal(int idAnimal, String especie, String raca, String temperamento, String historicoSaude, String nome, String descricao, boolean esEspecial, int idade, char sexo, String status, int idProtetor) {
+    public Animal(Integer idAnimal, String especie, String raca, String temperamento, String historicoSaude, String nome, String descricao, boolean esEspecial, int idade, char sexo, String status, int idProtetor) {
         this.id = idAnimal;
         this.especie = especie;
         this.raca = raca;
@@ -31,6 +31,10 @@ public class Animal {
         this.sexo = sexo;
         this.status = status;
         this.protetor = new Protetor(idProtetor, "", "", "", "", "", "", "");
+    }
+
+    public Animal() {
+
     }
 
     public Protetor getProtetor() {

@@ -92,14 +92,15 @@ CREATE TABLE Mensagem (
 
 );
 
--- Tabela de junção para ProcessoAdocao e Mensagem
-CREATE TABLE Processo_Mensagem (
-    id_processo INT,
-    id_mensagem INT,
-    PRIMARY KEY (id_processo, id_mensagem),
-    FOREIGN KEY (id_processo) REFERENCES ProcessoAdocao(idPAdocao) ON DELETE CASCADE,
-    FOREIGN KEY (id_mensagem) REFERENCES Mensagem(idMensagem) ON DELETE CASCADE
-);
+---- Tabela de junção para ProcessoAdocao e Mensagem
+--CREATE TABLE Processo_Mensagem (
+--    idPMensagem INT PRIMARY KEY AUTO_INCREMENT,
+--    id_processo INT,
+--    id_mensagem INT,
+--    PRIMARY KEY (id_processo, id_mensagem),
+--    FOREIGN KEY (id_processo) REFERENCES ProcessoAdocao(idPAdocao) ON DELETE CASCADE,
+--    FOREIGN KEY (id_mensagem) REFERENCES Mensagem(idMensagem) ON DELETE CASCADE
+--);
 
 -- Tabela Adocao
 CREATE TABLE Adocao (
@@ -376,7 +377,8 @@ BEGIN
     'idRemetente',    OLD.idRemetente,
     'tipoRemetente',  OLD.tipoRemetente,
     'idDestinatario', OLD.idDestinatario,
-    'tipoDestinatario', OLD.tipoDestinatario
+    'tipoDestinatario', OLD.tipoDestinatario,
+    'id_processo',    OLD.id_processo
   );
 
   SET newData = JSON_OBJECT(
@@ -386,7 +388,8 @@ BEGIN
     'idRemetente',    NEW.idRemetente,
     'tipoRemetente',  NEW.tipoRemetente,
     'idDestinatario', NEW.idDestinatario,
-    'tipoDestinatario', NEW.tipoDestinatario
+    'tipoDestinatario', NEW.tipoDestinatario,
+    'id_processo',    NEW.id_processo
   );
 
   INSERT INTO LogAuditoriaUpdate (dataRegistro, tabelaModificada, registroAnterior, registroNovo)

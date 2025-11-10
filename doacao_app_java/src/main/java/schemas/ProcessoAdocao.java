@@ -15,6 +15,20 @@ public class ProcessoAdocao {
     private Integer id_animal;
     private Integer id_adotante;
 
+    public ProcessoAdocao(Integer idPAdocao, Animal animal, Adotante adotante, StatusProcesso status, LocalDate dataIncio, Integer id_animal, Integer id_adotante) {
+        this.idPAdocao = idPAdocao;
+        this.animal = animal;
+        this.adotante = adotante;
+        this.status = status;
+        this.dataIncio = dataIncio;
+        this.id_animal = id_animal;
+        this.id_adotante = id_adotante;
+    }
+
+    public ProcessoAdocao() {
+
+    }
+
     public Integer getIdPAdocao() {
         return idPAdocao;
     }

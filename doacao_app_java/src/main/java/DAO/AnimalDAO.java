@@ -3,6 +3,7 @@ package DAO;
 import schemas.Animal;
 import repository.MYSQLConnection;
 import exceptions.CustomException;
+import schemas.Protetor;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -48,20 +49,25 @@ public class AnimalDAO {
             stmt.setInt(1, idAnimal);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return new Animal(
-                        rs.getInt("idAnimal"),
-                        rs.getString("especie"),
-                        rs.getString("raca"),
-                        rs.getString("temperamento"),
-                        rs.getString("historicoSaude"),
-                        rs.getString("nome"),
-                        rs.getString("descricao"),
-                        rs.getBoolean("esEspecial"),
-                        rs.getInt("idade"),
-                        rs.getString("sexo").charAt(0),
-                        rs.getString("status"),
-                        rs.getInt("id_protetor")
-                );
+                Animal animal = new Animal();
+                animal.setId(rs.getInt("idAnimal"));
+                animal.setEspecie(rs.getString("especie"));
+                animal.setRaca(rs.getString("raca"));
+                animal.setTemperamento(rs.getString("temperamento"));
+                animal.setHistoricoSaude(rs.getString("historicoSaude"));
+                animal.setNome(rs.getString("nome"));
+                animal.setDescricao(rs.getString("descricao"));
+                animal.setEsEspecial(rs.getBoolean("esEspecial"));
+                animal.setIdade(rs.getInt("idade"));
+                animal.setSexo(rs.getString("sexo").charAt(0));
+                animal.setStatus(rs.getString("status"));
+
+                // Buscar o objeto agregado Protetor
+                ProtetorDAO protetordao = new ProtetorDAO();
+                Protetor protetor = protetordao.read(rs.getInt("id_protetor"));
+                animal.setProtetor(protetor);
+
+                return animal;
             }
         } catch (SQLException e) {
             throw new CustomException("Erro ao buscar Animal", e);
@@ -76,20 +82,25 @@ public class AnimalDAO {
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                animais.add(new Animal(
-                        rs.getInt("idAnimal"),
-                        rs.getString("especie"),
-                        rs.getString("raca"),
-                        rs.getString("temperamento"),
-                        rs.getString("historicoSaude"),
-                        rs.getString("nome"),
-                        rs.getString("descricao"),
-                        rs.getBoolean("esEspecial"),
-                        rs.getInt("idade"),
-                        rs.getString("sexo").charAt(0),
-                        rs.getString("status"),
-                        rs.getInt("id_protetor")
-                ));
+                Animal animal = new Animal();
+                animal.setId(rs.getInt("idAnimal"));
+                animal.setEspecie(rs.getString("especie"));
+                animal.setRaca(rs.getString("raca"));
+                animal.setTemperamento(rs.getString("temperamento"));
+                animal.setHistoricoSaude(rs.getString("historicoSaude"));
+                animal.setNome(rs.getString("nome"));
+                animal.setDescricao(rs.getString("descricao"));
+                animal.setEsEspecial(rs.getBoolean("esEspecial"));
+                animal.setIdade(rs.getInt("idade"));
+                animal.setSexo(rs.getString("sexo").charAt(0));
+                animal.setStatus(rs.getString("status"));
+
+
+                ProtetorDAO protetordao = new ProtetorDAO();
+                Protetor protetor = protetordao.read(rs.getInt("id_protetor"));
+                animal.setProtetor(protetor);
+
+                animais.add(animal);
             }
         } catch (SQLException e) {
             throw new CustomException("Erro ao listar Animais", e);

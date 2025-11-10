@@ -7,9 +7,9 @@ public class Mensagem {
     private Date dataMensagem;
     private String conteudo;
     private Integer idRemetente;
-    private Integer idDestinario;
+    private Integer idDestinatario;
     private String tipoRemetente;
-    private String tipoDestinario;
+    private String tipoDestinatario;
     private ProcessoAdocao processoAdocao;
     private Integer id_processo;
 
@@ -17,9 +17,9 @@ public class Mensagem {
         this.dataMensagem = dataMensagem;
         this.conteudo = conteudo;
         this.idRemetente = idRemetente;
-        this.idDestinario = idDestinatario;
+        this.idDestinatario = idDestinatario;
         this.tipoRemetente = tipoRemetente;
-        this.tipoDestinario = tipoDestinatario;
+        this.tipoDestinatario = tipoDestinatario;
         this.processoAdocao = new ProcessoAdocao();
         this.processoAdocao.setIdPAdocao(idProcesso);
     }
@@ -40,12 +40,12 @@ public class Mensagem {
         this.tipoRemetente = tipoRemetente;
     }
 
-    public String getTipoDestinario() {
-        return tipoDestinario;
+    public String getTipoDestinatario() {
+        return tipoDestinatario;
     }
 
-    public void setTipoDestinario(String tipoDestinario) {
-        this.tipoDestinario = tipoDestinario;
+    public void setTipoDestinatario(String tipoDestinatario) {
+        this.tipoDestinatario = tipoDestinatario;
     }
 
     public Integer getIdMensagem() {
@@ -80,12 +80,12 @@ public class Mensagem {
         this.idRemetente = idRemetente;
     }
 
-    public Integer getIdDestinario() {
-        return idDestinario;
+    public Integer getIdDestinatario() {
+        return idDestinatario;
     }
 
-    public void setIdDestinario(Integer idDestinario) {
-        this.idDestinario = idDestinario;
+    public void setIdDestinatario(Integer idDestinatario) {
+        this.idDestinatario = idDestinatario;
     }
 
     public Integer getId_processo() {

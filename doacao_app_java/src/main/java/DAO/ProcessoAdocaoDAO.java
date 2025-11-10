@@ -1,7 +1,6 @@
 package DAO;
 
-import schemas.ProcessoAdocao;
-import schemas.StatusProcesso;
+import schemas.*;
 import repository.MYSQLConnection;
 import exceptions.CustomException;
 
@@ -11,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProcessoAdocaoDAO {
-    private Connection connection;
+     private Connection connection;
 
     public ProcessoAdocaoDAO() throws CustomException {
         try {
@@ -45,17 +44,25 @@ public class ProcessoAdocaoDAO {
         String sql = "SELECT * FROM ProcessoAdocao WHERE idPAdocao = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                ProcessoAdocao processo = new ProcessoAdocao();
-                processo.setIdPAdocao(rs.getInt("idPAdocao"));
-                processo.setId_animal(rs.getInt("id_animal"));
-                processo.setId_adotante(rs.getInt("id_adotante"));
-                processo.setStatus(StatusProcesso.valueOf(rs.getString("status")));
-                processo.setDataIncio(rs.getDate("dataInicio").toLocalDate());
-                return processo;
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    ProcessoAdocao processo = new ProcessoAdocao();
+                    processo.setIdPAdocao(rs.getInt("idPAdocao"));
+                    processo.setId_animal(rs.getInt("id_animal"));
+                    processo.setId_adotante(rs.getInt("id_adotante"));
+                    processo.setStatus(StatusProcesso.valueOf(rs.getString("status")));
+                    processo.setDataIncio(rs.getDate("dataInicio").toLocalDate());
+
+                    AnimalDAO animalDAO = new AnimalDAO();
+                    processo.setAnimal(animalDAO.read(processo.getId_animal()));
+
+                    AdotanteDAO adotanteDAO = new AdotanteDAO();
+                    processo.setAdotante(adotanteDAO.read(processo.getId_adotante()));
+
+                    return processo;
+                }
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new CustomException("Erro ao buscar ProcessoAdocao", e);
         }
         return null;
@@ -65,22 +72,32 @@ public class ProcessoAdocaoDAO {
     public List<ProcessoAdocao> readAll() throws CustomException {
         List<ProcessoAdocao> processos = new ArrayList<>();
         String sql = "SELECT * FROM ProcessoAdocao";
+
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
+
+            AnimalDAO animalDAO = new AnimalDAO();
+            AdotanteDAO adotanteDAO = new AdotanteDAO();
+
             while (rs.next()) {
                 ProcessoAdocao processo = new ProcessoAdocao();
                 processo.setIdPAdocao(rs.getInt("idPAdocao"));
                 processo.setId_animal(rs.getInt("id_animal"));
                 processo.setId_adotante(rs.getInt("id_adotante"));
                 processo.setStatus(StatusProcesso.valueOf(rs.getString("status")));
-                processo.setDataIncio(rs.getDate("dataInicio").toLocalDate());
+                processo.setDataIncio((rs.getDate("dataInicio").toLocalDate()));
+
+                processo.setAnimal(animalDAO.read(processo.getId_animal()));
+                processo.setAdotante(adotanteDAO.read(processo.getId_adotante()));
+
                 processos.add(processo);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new CustomException("Erro ao listar ProcessoAdocao", e);
         }
         return processos;
     }
+
 
     // UPDATE: Atualizar um ProcessoAdocao
     public void update(ProcessoAdocao processo) throws CustomException {

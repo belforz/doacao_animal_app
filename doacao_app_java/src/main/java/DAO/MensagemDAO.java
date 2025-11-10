@@ -27,8 +27,8 @@ public class MensagemDAO {
             stmt.setString(2, mensagem.getConteudo());
             stmt.setInt(3, mensagem.getIdRemetente());
             stmt.setString(4, mensagem.getTipoRemetente());
-            stmt.setInt(5, mensagem.getIdDestinario());
-            stmt.setString(6, mensagem.getTipoDestinario());
+            stmt.setInt(5, mensagem.getIdDestinatario());
+            stmt.setString(6, mensagem.getTipoDestinatario());
             stmt.setInt(7, mensagem.getId_processo());
             stmt.executeUpdate();
             ResultSet rs = stmt.getGeneratedKeys();
@@ -99,8 +99,8 @@ public class MensagemDAO {
             stmt.setString(2, mensagem.getConteudo());
             stmt.setInt(3, mensagem.getIdRemetente());
             stmt.setString(4, mensagem.getTipoRemetente());
-            stmt.setInt(5, mensagem.getIdDestinario());
-            stmt.setString(6, mensagem.getTipoDestinario());
+            stmt.setInt(5, mensagem.getIdDestinatario());
+            stmt.setString(6, mensagem.getTipoDestinatario());
             stmt.setInt(7, mensagem.getId_processo());
             stmt.setInt(8, mensagem.getIdMensagem());
             stmt.executeUpdate();
