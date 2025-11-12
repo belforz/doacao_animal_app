@@ -1,20 +1,19 @@
 package schemas;
 
 public class Adotante extends Pessoa {
-    private String tipo;
+    private String preferenciaAdocao;
 
-    public String getTipo() {
-        return tipo;
+    public String getPreferenciaAdocao() {
+        return preferenciaAdocao;
     }
 
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
+    public void setPreferenciaAdocao(String preferenciaAdocao) {
+        this.preferenciaAdocao = preferenciaAdocao;
     }
 
-    public Adotante(Integer id, String nome, String senha, String endereco, String email, String documento, String telefone, String tipo) {
-        super(id,nome, email, documento, telefone, senha, endereco);
-        this.tipo = tipo;
-
+    public Adotante(Integer id, String nome, String senha, String endereco, String email, String documento, String telefone, String preferenciaAdocao) {
+        super(id, nome, email, documento, telefone, senha, endereco);
+        this.preferenciaAdocao = preferenciaAdocao;
     }
 
     @Override

@@ -21,7 +21,7 @@ public class ProtetorDAO {
 
     // CREATE: Inserir um novo Protetor
     public void create(Protetor protetor) throws CustomException {
-        String sql = "INSERT INTO Protetor (nome, email, documento, telefone, senha, endereco, preferenciaAdocao) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Protetor (nome, email, documento, telefone, senha, endereco, tipo) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, protetor.getNome());
             stmt.setString(2, protetor.getEmail());
@@ -29,7 +29,7 @@ public class ProtetorDAO {
             stmt.setString(4, protetor.getTelefone());
             stmt.setString(5, protetor.getSenha());
             stmt.setString(6, protetor.getEndereco());
-            stmt.setString(7, protetor.getPreferenciaAdocao());
+            stmt.setString(7, protetor.getTipo());
             stmt.executeUpdate();
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
@@ -56,7 +56,7 @@ public class ProtetorDAO {
                     rs.getString("email"),
                     rs.getString("documento"),
                     rs.getString("telefone"),
-                    rs.getString("preferenciaAdocao")
+                    rs.getString("tipo")
                 );
             }
         } catch (SQLException e) {
@@ -80,7 +80,7 @@ public class ProtetorDAO {
                     rs.getString("email"),
                     rs.getString("documento"),
                     rs.getString("telefone"),
-                    rs.getString("preferenciaAdocao")
+                    rs.getString("tipo")
                 ));
             }
         } catch (SQLException e) {
@@ -91,7 +91,7 @@ public class ProtetorDAO {
 
     // UPDATE: Atualizar um Protetor
     public void update(Protetor protetor) throws CustomException {
-        String sql = "UPDATE Protetor SET nome = ?, email = ?, documento = ?, telefone = ?, senha = ?, endereco = ?, preferenciaAdocao = ? WHERE idProtetor = ?";
+        String sql = "UPDATE Protetor SET nome = ?, email = ?, documento = ?, telefone = ?, senha = ?, endereco = ?, tipo = ? WHERE idProtetor = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, protetor.getNome());
             stmt.setString(2, protetor.getEmail());
@@ -99,7 +99,7 @@ public class ProtetorDAO {
             stmt.setString(4, protetor.getTelefone());
             stmt.setString(5, protetor.getSenha());
             stmt.setString(6, protetor.getEndereco());
-            stmt.setString(7, protetor.getPreferenciaAdocao());
+            stmt.setString(7, protetor.getTipo());
             stmt.setInt(8, protetor.getId());
             stmt.executeUpdate();
             System.out.println("Protetor atualizado com sucesso!");

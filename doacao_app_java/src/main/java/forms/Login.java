@@ -2,6 +2,10 @@ package forms;
 
 import javax.swing.*;
 import java.awt.*;
+import DAO.LoginDAO;
+import schemas.Adotante;
+import schemas.Protetor;
+import exceptions.CustomException;
 
 public class Login extends JFrame {
     private JPanel painelPrincipal;
@@ -11,6 +15,7 @@ public class Login extends JFrame {
     private JLabel labelSenha;
     private JPasswordField passwordFieldSenha;
     private JButton buttonLogin;
+    private JComboBox comboBoxTipo;
 
     public Login() {
         // Configuração da janela
@@ -31,31 +36,16 @@ public class Login extends JFrame {
         textFieldEmail.setBackground(Color.WHITE);
         passwordFieldSenha.setBackground(Color.WHITE);
 
-        // Configurar o label do logo para aceitar imagem
-        // Para adicionar uma imagem, use o método setLogoImage()
         labelLogo.setHorizontalAlignment(SwingConstants.CENTER);
+
+        // Adiconar opções ao combo box
+        comboBoxTipo.addItem("Adotante");
+        comboBoxTipo.addItem("Protetor");
 
         // Adicionar action listener ao botão de login
         buttonLogin.addActionListener(e -> realizarLogin());
     }
 
-    /**
-     * Método para definir a imagem do logo
-     * @param caminhoImagem Caminho para o arquivo de imagem
-     */
-    public void setLogoImage(String caminhoImagem) {
-        try {
-            ImageIcon logoIcon = new ImageIcon(caminhoImagem);
-            // Redimensionar a imagem se necessário
-            Image image = logoIcon.getImage();
-            Image newimg = image.getScaledInstance(200, 100, Image.SCALE_SMOOTH);
-            logoIcon = new ImageIcon(newimg);
-            labelLogo.setIcon(logoIcon);
-        } catch (Exception e) {
-            System.err.println("Erro ao carregar imagem do logo: " + e.getMessage());
-            labelLogo.setText("Logo");
-        }
-    }
 
     /**
      * Método chamado quando o botão de login é clicado
@@ -72,15 +62,48 @@ public class Login extends JFrame {
             return;
         }
 
-        // Aqui você pode adicionar a lógica de autenticação
-        // Por exemplo, verificar no banco de dados
-        System.out.println("Tentativa de login com email: " + email);
+        String tipoSelecionado = (String) comboBoxTipo.getSelectedItem();
 
-        // Exemplo de validação básica (substituir por validação real)
-        JOptionPane.showMessageDialog(this,
-            "Login em desenvolvimento...",
-            "Informação",
-            JOptionPane.INFORMATION_MESSAGE);
+        try {
+            LoginDAO loginDAO = new LoginDAO();
+
+            if ("Adotante".equals(tipoSelecionado)) {
+                Adotante adotante = loginDAO.loginAdotante(email, senha);
+                if (adotante != null) {
+                    JOptionPane.showMessageDialog(this,
+                        "Login realizado com sucesso como Adotante!",
+                        "Sucesso",
+                        JOptionPane.INFORMATION_MESSAGE);
+                    this.dispose();
+                    Welcome welcome = new Welcome("Adotante", adotante);
+                    welcome.setVisible(true);
+                    return;
+                }
+            } else if ("Protetor".equals(tipoSelecionado)) {
+                Protetor protetor = loginDAO.loginProtetor(email, senha);
+                if (protetor != null) {
+                    JOptionPane.showMessageDialog(this,
+                        "Login realizado com sucesso como Protetor!",
+                        "Sucesso",
+                        JOptionPane.INFORMATION_MESSAGE);
+                    this.dispose();
+                    Welcome welcome = new Welcome("Protetor", protetor);
+                    welcome.setVisible(true);
+                    return;
+                }
+            }
+
+            JOptionPane.showMessageDialog(this,
+                "Email ou senha incorretos para o tipo selecionado!",
+                "Erro de Login",
+                JOptionPane.ERROR_MESSAGE);
+
+        } catch (CustomException e) {
+            JOptionPane.showMessageDialog(this,
+                "Erro ao realizar login: " + e.getMessage(),
+                "Erro",
+                JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -112,11 +135,7 @@ public class Login extends JFrame {
         SwingUtilities.invokeLater(() -> {
             Login loginFrame = new Login();
 
-            // Exemplo de como adicionar uma imagem (descomente e ajuste o caminho)
-            // loginFrame.setLogoImage("src/main/resources/logo.png");
-
             loginFrame.setVisible(true);
         });
     }
 }
-

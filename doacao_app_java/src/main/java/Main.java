@@ -38,15 +38,15 @@ public class Main {
             Date data = Date.valueOf(localdate);
             // Teste de criar
             // Adotante
-            Adotante adotante = new Adotante(null, "Leandro", "1234568", "Rua B, 488", "macedobeiramar@hotmail.com", "041657201", "11111111", "Adotante");
+            Adotante adotante = new Adotante(23, "Leandro", "1234568", "Rua B, 488", "macedobeiramar@hotmail.com", "04165672651", "11111111", "Adotante");
             adotantedao.create(adotante);
             System.out.println("Adotante criado com ID: " + adotante.getId());
             // Protetor
-            Protetor protetor = new Protetor(null, "Leandro Protetor", "2345678", "Rua C, 123", "macedobeiramaru@hotmail.com", "456678765", "22222222", "Protetor");
+            Protetor protetor = new Protetor(23, "Leandro Protetor", "2345678", "Rua C, 123", "macedobeiramaru@hotmail.com", "4566567658765", "22222222", "Protetor");
             protetordao.create(protetor);
             System.out.println("Protetor criado com ID: " + protetor.getId());
             // Animal
-            Animal animal = new Animal(null, "Rex", "Cachorro", "Labrador", "Bom", "Masculino", "Grande", false, 2, 'M', "BEM", protetor.getId());
+            Animal animal = new Animal(23, "Rex", "Cachorro", "Labrador", "Bom", "Masculino", "Grande", false, 2, 'M', "BEM", protetor.getId());
             animaldao.create(animal);
             System.out.println("Animal criado com ID: " + animal.getId());
             // FotoAnimal
@@ -55,7 +55,7 @@ public class Main {
             System.out.println("FotoAnimal criado com ID: " + fotoAnimal.getIdFotoAnimal());
 
             // ProcessoAdocao
-            ProcessoAdocao processoAdocao = new ProcessoAdocao(null, animal, adotante, StatusProcesso.ENTREVISTA, localdate, animal.getId(), adotante.getId());
+            ProcessoAdocao processoAdocao = new ProcessoAdocao(23, animal, adotante, StatusProcesso.ENTREVISTA, localdate, animal.getId(), adotante.getId());
             processoadocaodao.create(processoAdocao);
             // Mensagem
             Mensagem mensagem = new Mensagem(data, "Olá, estou interessado em adotar o Rex.", adotante.getId(), protetor.getId(), "Adotante", "Protetor", processoAdocao.getIdPAdocao());
@@ -63,17 +63,17 @@ public class Main {
             System.out.println("Mensagem criada com ID: " + mensagem.getIdMensagem());
 
             // EtapaProcesso
-            EtapaProcesso etapa = new EtapaProcesso(null, localdate, "Entrevista inicial", "PENDENTE", "ENTREVISTA", processoAdocao.getIdPAdocao());
+            EtapaProcesso etapa = new EtapaProcesso(23, localdate, "Entrevista inicial", "PENDENTE", "ENTREVISTA", processoAdocao.getIdPAdocao());
             etapaprocessodao.create(etapa);
             System.out.println("EtapaProcesso criada com ID: " + etapa.getId());
 
             //Adocao
-            Adocao adocao = new Adocao(null, localdate, "Adoção concluída", "Termos aceitos", processoAdocao.getIdPAdocao());
+            Adocao adocao = new Adocao(23, localdate, "Adoção concluída", "Termos aceitos", processoAdocao.getIdPAdocao());
             adocaodao.create(adocao);
             System.out.println("Adocao criada com ID: " + adocao.getIdAdocao());
 
             // SuportePosAdocao
-            SuportePosAdocao suporte = new SuportePosAdocao(null, localdate, "Consulta veterinária", "Ajuda com vacinas", adocao.getIdAdocao());
+            SuportePosAdocao suporte = new SuportePosAdocao(23, localdate, "Consulta veterinária", "Ajuda com vacinas", adocao.getIdAdocao());
             suporteposadocaodao.create(suporte);
             System.out.println("SuportePosAdocao criado com ID: " + suporte.getIdSuporte());
 
@@ -131,4 +131,3 @@ public class Main {
             System.err.println("Erro inesperado: " + ex.getMessage());
         }
     }};
-

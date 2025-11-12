@@ -22,6 +22,7 @@ public class Mensagem {
         this.tipoDestinatario = tipoDestinatario;
         this.processoAdocao = new ProcessoAdocao();
         this.processoAdocao.setIdPAdocao(idProcesso);
+        this.id_processo = idProcesso;
     }
 
     public ProcessoAdocao getProcessoAdocao() {

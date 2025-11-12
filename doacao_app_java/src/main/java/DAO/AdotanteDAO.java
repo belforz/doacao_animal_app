@@ -21,7 +21,7 @@ public class AdotanteDAO {
 
     // CREATE: Inserir um novo Adotante
     public void create(Adotante adotante) throws CustomException {
-        String sql = "INSERT INTO Adotante (nome, email, documento, telefone, senha, endereco, tipo) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Adotante (nome, email, documento, telefone, senha, endereco, preferenciaAdocao) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, adotante.getNome());
             stmt.setString(2, adotante.getEmail());
@@ -29,7 +29,7 @@ public class AdotanteDAO {
             stmt.setString(4, adotante.getTelefone());
             stmt.setString(5, adotante.getSenha());
             stmt.setString(6, adotante.getEndereco());
-            stmt.setString(7, adotante.getTipo());
+            stmt.setString(7, adotante.getPreferenciaAdocao());
             stmt.executeUpdate();
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
@@ -56,7 +56,7 @@ public class AdotanteDAO {
                     rs.getString("email"),
                     rs.getString("documento"),
                     rs.getString("telefone"),
-                    rs.getString("tipo")
+                    rs.getString("preferenciaAdocao")
                 );
             }
         } catch (SQLException e) {
@@ -80,7 +80,7 @@ public class AdotanteDAO {
                     rs.getString("email"),
                     rs.getString("documento"),
                     rs.getString("telefone"),
-                    rs.getString("tipo")
+                    rs.getString("preferenciaAdocao")
                 ));
             }
         } catch (SQLException e) {
@@ -91,7 +91,7 @@ public class AdotanteDAO {
 
     // UPDATE: Atualizar um Adotante
     public void update(Adotante adotante) throws CustomException {
-        String sql = "UPDATE Adotante SET nome = ?, email = ?, documento = ?, telefone = ?, senha = ?, endereco = ?, tipo = ? WHERE idAdotante = ?";
+        String sql = "UPDATE Adotante SET nome = ?, email = ?, documento = ?, telefone = ?, senha = ?, endereco = ?, preferenciaAdocao = ? WHERE idAdotante = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, adotante.getNome());
             stmt.setString(2, adotante.getEmail());
@@ -99,7 +99,7 @@ public class AdotanteDAO {
             stmt.setString(4, adotante.getTelefone());
             stmt.setString(5, adotante.getSenha());
             stmt.setString(6, adotante.getEndereco());
-            stmt.setString(7, adotante.getTipo());
+            stmt.setString(7, adotante.getPreferenciaAdocao());
             stmt.setInt(8, adotante.getId());
             stmt.executeUpdate();
             System.out.println("Adotante atualizado com sucesso!");

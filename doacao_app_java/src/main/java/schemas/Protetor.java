@@ -1,19 +1,19 @@
 package schemas;
 
 public class Protetor extends Pessoa {
-    private String preferenciaAdocao;
+    private String tipo;
 
-    public Protetor(Integer id,String nome, String senha, String endereco, String email, String documento, String telefone, String preferenciaAdocao) {
+    public Protetor(Integer id,String nome, String senha, String endereco, String email, String documento, String telefone, String tipo) {
         super(id,nome, email, documento, telefone, senha, endereco);
-        this.preferenciaAdocao = preferenciaAdocao;
+        this.tipo = tipo;
     }
 
-    public String getPreferenciaAdocao() {
-        return preferenciaAdocao;
+    public String getTipo() {
+        return tipo;
     }
 
-    public void setPreferenciaAdocao(String preferenciaAdocao) {
-        this.preferenciaAdocao = preferenciaAdocao;
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
     @Override
     public void enviarMensagem(String texto) {

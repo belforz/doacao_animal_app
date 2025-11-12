@@ -14,7 +14,7 @@ CREATE TABLE Protetor (
     telefone VARCHAR(255),
     senha VARCHAR(255),
     endereco VARCHAR(255),
-    preferenciaAdocao VARCHAR(255)
+    tipo VARCHAR(255)
 );
 
 -- Tabela Adotante (herda de Pessoa)
@@ -26,7 +26,7 @@ CREATE TABLE Adotante (
     telefone VARCHAR(255),
     senha VARCHAR(255),
     endereco VARCHAR(255),
-    tipo VARCHAR(255)
+    preferenciaAdocao VARCHAR(255)
 );
 
 -- Tabela Animal
@@ -184,7 +184,7 @@ BEGIN
     'telefone',  OLD.telefone,
     'senha',     OLD.senha,
     'endereco',  OLD.endereco,
-    'tipo',      OLD.tipo
+    'preferenciaAdocao',      OLD.preferenciaAdocao
   );
 
   SET newData = JSON_OBJECT(
@@ -195,7 +195,7 @@ BEGIN
     'telefone',  NEW.telefone,
     'senha',     NEW.senha,
     'endereco',  NEW.endereco,
-    'tipo',      NEW.tipo
+    'preferenciaAdocao',      NEW.preferenciaAdocao
   );
 
   INSERT INTO LogAuditoriaUpdate (dataRegistro, tabelaModificada, registroAnterior, registroNovo)
@@ -218,7 +218,7 @@ BEGIN
     'telefone',          OLD.telefone,
     'senha',             OLD.senha,
     'endereco',          OLD.endereco,
-    'preferenciaAdocao', OLD.preferenciaAdocao
+    'tipo', OLD.tipo
   );
 
   SET newData = JSON_OBJECT(
@@ -229,7 +229,7 @@ BEGIN
     'telefone',          NEW.telefone,
     'senha',             NEW.senha,
     'endereco',          NEW.endereco,
-    'preferenciaAdocao', NEW.preferenciaAdocao
+    'tipo', NEW.tipo
   );
 
   INSERT INTO LogAuditoriaUpdate (dataRegistro, tabelaModificada, registroAnterior, registroNovo)
@@ -478,51 +478,51 @@ end;
 -- Inserções
 
 -- Protetores
-INSERT INTO Protetor (nome, email, documento, telefone, senha, endereco, preferenciaAdocao) VALUES
-('João Silva', 'joao@email.com', '123456789', '11987654321', 'senha123', 'Rua A, 123', 'Cachorros'),
-('Maria Oliveira', 'maria@email.com', '987654321', '11876543210', 'senha456', 'Rua B, 456', 'Gatos'),
-('Carlos Santos', 'carlos@email.com', '456789123', '11765432109', 'senha789', 'Rua C, 789', 'Pássaros'),
-('Ana Costa', 'ana@email.com', '321654987', '11654321098', 'senha101', 'Rua D, 101', 'Cachorros'),
-('Pedro Lima', 'pedro@email.com', '654987321', '11543210987', 'senha202', 'Rua E, 202', 'Gatos'),
-('Laura Martins', 'laura@email.com', '11122233344', '11999999991', 'senha111', 'Rua K, 111', 'Cachorros'),
-('Bruno Souza', 'bruno@email.com', '22233344455', '11999999992', 'senha222', 'Rua L, 112', 'Gatos'),
-('Patrícia Lima', 'patricia@email.com', '33344455566', '11999999993', 'senha333', 'Rua M, 113', 'Pássaros'),
-('Eduardo Alves', 'eduardo@email.com', '44455566677', '11999999994', 'senha444', 'Rua N, 114', 'Cachorros'),
-('Renata Costa', 'renata@email.com', '55566677788', '11999999995', 'senha555', 'Rua O, 115', 'Gatos'),
-('Felipe Rocha', 'felipe@email.com', '66677788899', '11999999996', 'senha666', 'Rua P, 116', 'Pássaros'),
-('Camila Ribeiro', 'camila@email.com', '77788899900', '11999999997', 'senha777', 'Rua Q, 117', 'Cachorros'),
-('Daniel Fernandes', 'daniel@email.com', '88899900011', '11999999998', 'senha888', 'Rua R, 118', 'Gatos'),
-('Aline Barros', 'aline@email.com', '99900011122', '11999999999', 'senha999', 'Rua S, 119', 'Pássaros'),
-('Gustavo Teixeira', 'gustavo@email.com', '00011122233', '11988888888', 'senha000', 'Rua T, 120', 'Cachorros'),
-('Isabela Cunha', 'isabela@email.com', '11122233345', '11977777777', 'senhaabc', 'Rua U, 121', 'Gatos'),
-('Rafael Mendes', 'rafael@email.com', '22233344456', '11966666666', 'senhaxyz', 'Rua V, 122', 'Pássaros'),
-('Vanessa Lopes', 'vanessa@email.com', '33344455567', '11955555555', 'senhaqwe', 'Rua W, 123', 'Cachorros'),
-('Rodrigo Neves', 'rodrigo@email.com', '44455566678', '11944444444', 'senhazxc', 'Rua X, 124', 'Gatos'),
-('Beatriz Silva', 'beatriz@email.com', '55566677789', '11933333333', 'senhasdf', 'Rua Y, 125', 'Pássaros');
+INSERT INTO Protetor (nome, email, documento, telefone, senha, endereco, tipo) VALUES
+('João Silva', 'joao@email.com', '123456789', '11987654321', 'senha123', 'Rua A, 123', 'Individual'),
+('Maria Oliveira', 'maria@email.com', '987654321', '11876543210', 'senha456', 'Rua B, 456', 'Família'),
+('Carlos Santos', 'carlos@email.com', '456789123', '11765432109', 'senha789', 'Rua C, 789', 'Individual'),
+('Ana Costa', 'ana@email.com', '321654987', '11654321098', 'senha101', 'Rua D, 101', 'Família'),
+('Pedro Lima', 'pedro@email.com', '654987321', '11543210987', 'senha202', 'Rua E, 102', 'Individual'),
+('Laura Martins', 'laura@email.com', '11122233344', '11999999991', 'senha111', 'Rua K, 111', 'Família'),
+('Bruno Souza', 'bruno@email.com', '22233344455', '11999999992', 'senha222', 'Rua L, 112', 'Individual'),
+('Patrícia Lima', 'patricia@email.com', '33344455566', '11999999993', 'senha333', 'Rua M, 113', 'Família'),
+('Eduardo Alves', 'eduardo@email.com', '44455566677', '11999999994', 'senha444', 'Rua N, 114', 'Individual'),
+('Renata Costa', 'renata@email.com', '55566677788', '11999999995', 'senha555', 'Rua O, 115', 'Família'),
+('Felipe Rocha', 'felipe@email.com', '66677788899', '11999999996', 'senha666', 'Rua P, 116', 'Individual'),
+('Camila Ribeiro', 'camila@email.com', '77788899900', '11999999997', 'senha777', 'Rua Q, 117', 'Família'),
+('Daniel Fernandes', 'daniel@email.com', '88899900011', '11999999998', 'senha888', 'Rua R, 118', 'Individual'),
+('Aline Barros', 'aline@email.com', '99900011122', '11999999999', 'senha999', 'Rua S, 119', 'Família'),
+('Gustavo Teixeira', 'gustavo@email.com', '00011122233', '11988888888', 'senha000', 'Rua T, 120', 'Individual'),
+('Isabela Cunha', 'isabela@email.com', '11122233345', '11977777777', 'senhaabc', 'Rua U, 121', 'Família'),
+('Rafael Mendes', 'rafael@email.com', '22233344456', '11966666666', 'senhaxyz', 'Rua V, 122', 'Individual'),
+('Vanessa Lopes', 'vanessa@email.com', '33344455567', '11955555555', 'senhaqwe', 'Rua W, 123', 'Família'),
+('Rodrigo Neves', 'rodrigo@email.com', '44455566678', '11944444444', 'senhazxc', 'Rua X, 124', 'Individual'),
+('Beatriz Silva', 'beatriz@email.com', '55566677789', '11933333333', 'senhasdf', 'Rua Y, 125', 'Família');
 
 
 -- Adotantes
-INSERT INTO Adotante (nome, email, documento, telefone, senha, endereco, tipo) VALUES
-('Lucas Pereira', 'lucas@email.com', '111222333', '11432109876', 'senha303', 'Rua F, 303', 'Individual'),
-('Fernanda Rocha', 'fernanda@email.com', '444555666', '11321098765', 'senha404', 'Rua G, 404', 'Família'),
-('Roberto Alves', 'roberto@email.com', '777888999', '11210987654', 'senha505', 'Rua H, 505', 'Individual'),
-('Juliana Mendes', 'juliana@email.com', '000111222', '11109876543', 'senha606', 'Rua I, 606', 'Família'),
-('Thiago Nunes', 'thiago@email.com', '333444555', '11098765432', 'senha707', 'Rua J, 707', 'Individual'),
-('André Gomes', 'andre@email.com', '12312312312', '11911111111', 'senha808', 'Rua Z, 126', 'Família'),
-('Tatiane Freitas', 'tatiane@email.com', '23423423423', '11922222222', 'senha909', 'Rua AA, 127', 'Individual'),
-('Marcelo Dias', 'marcelo@email.com', '34534534534', '11933333333', 'senha010', 'Rua AB, 128', 'Família'),
-('Carolina Pinto', 'carolina@email.com', '45645645645', '11944444444', 'senha111', 'Rua AC, 129', 'Individual'),
-('Diego Moreira', 'diego@email.com', '56756756756', '11955555555', 'senha212', 'Rua AD, 130', 'Família'),
-('Simone Tavares', 'simone@email.com', '67867867867', '11966666666', 'senha313', 'Rua AE, 131', 'Individual'),
-('Henrique Castro', 'henrique@email.com', '78978978978', '11977777777', 'senha414', 'Rua AF, 132', 'Família'),
-('Elaine Duarte', 'elaine@email.com', '89089089089', '11988888888', 'senha515', 'Rua AG, 133', 'Individual'),
-('Fábio Cardoso', 'fabio@email.com', '90190190190', '11999999999', 'senha616', 'Rua AH, 134', 'Família'),
-('Natalia Reis', 'natalia@email.com', '01201201201', '11888888888', 'senha717', 'Rua AI, 135', 'Individual'),
-('Jorge Santana', 'jorge@email.com', '12312312345', '11777777777', 'senha818', 'Rua AJ, 136', 'Família'),
-('Luciana Prado', 'luciana@email.com', '23423423456', '11666666666', 'senha919', 'Rua AK, 137', 'Individual'),
-('Paulo Henrique', 'paulo@email.com', '34534534567', '11555555555', 'senha020', 'Rua AL, 138', 'Família'),
-('Sabrina Moraes', 'sabrina@email.com', '45645645678', '11444444444', 'senha121', 'Rua AM, 139', 'Individual'),
-('Renan Farias', 'renan@email.com', '56756756789', '11333333333', 'senha222', 'Rua AN, 140', 'Família');
+INSERT INTO Adotante (nome, email, documento, telefone, senha, endereco, preferenciaAdocao) VALUES
+('Lucas Pereira', 'lucas@email.com', '111222333', '11432109876', 'senha303', 'Rua F, 303', 'Cachorros'),
+('Fernanda Rocha', 'fernanda@email.com', '444555666', '11321098765', 'senha404', 'Rua G, 404', 'Gatos'),
+('Roberto Alves', 'roberto@email.com', '777888999', '11210987654', 'senha505', 'Rua H, 505', 'Pássaros'),
+('Juliana Mendes', 'juliana@email.com', '000111222', '11109876543', 'senha606', 'Rua I, 606', 'Cachorros'),
+('Thiago Nunes', 'thiago@email.com', '333444555', '11098765432', 'senha707', 'Rua J, 707', 'Gatos'),
+('André Gomes', 'andre@email.com', '12312312312', '11911111111', 'senha808', 'Rua Z, 126', 'Cachorros'),
+('Tatiane Freitas', 'tatiane@email.com', '23423423423', '11922222222', 'senha909', 'Rua AA, 127', 'Gatos'),
+('Marcelo Dias', 'marcelo@email.com', '34534534534', '11933333333', 'senha010', 'Rua AB, 128', 'Pássaros'),
+('Carolina Pinto', 'carolina@email.com', '45645645645', '11944444444', 'senha111', 'Rua AC, 129', 'Cachorros'),
+('Diego Moreira', 'diego@email.com', '56756756756', '11955555555', 'senha212', 'Rua AD, 130', 'Gatos'),
+('Simone Tavares', 'simone@email.com', '67867867867', '11966666666', 'senha313', 'Rua AE, 131', 'Pássaros'),
+('Henrique Castro', 'henrique@email.com', '78978978978', '11977777777', 'senha414', 'Rua AF, 132', 'Cachorros'),
+('Elaine Duarte', 'elaine@email.com', '89089089089', '11988888888', 'senha515', 'Rua AG, 133', 'Gatos'),
+('Fábio Cardoso', 'fabio@email.com', '90190190190', '11999999999', 'senha616', 'Rua AH, 134', 'Pássaros'),
+('Natalia Reis', 'natalia@email.com', '01201201201', '11888888888', 'senha717', 'Rua AI, 135', 'Cachorros'),
+('Jorge Santana', 'jorge@email.com', '12312312345', '11777777777', 'senha818', 'Rua AJ, 136', 'Gatos'),
+('Luciana Prado', 'luciana@email.com', '23423423456', '11666666666', 'senha919', 'Rua AK, 137', 'Pássaros'),
+('Paulo Henrique', 'paulo@email.com', '34534534567', '11555555555', 'senha020', 'Rua AL, 138', 'Cachorros'),
+('Sabrina Moraes', 'sabrina@email.com', '45645645678', '11444444444', 'senha121', 'Rua AM, 139', 'Gatos'),
+('Renan Farias', 'renan@email.com', '56756756789', '11333333333', 'senha222', 'Rua AN, 140', 'Pássaros');
 
 
 -- Animais

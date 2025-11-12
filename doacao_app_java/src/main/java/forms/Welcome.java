@@ -1,5 +1,10 @@
 package forms;
 
+import DAO.LoginDAO;
+import exceptions.CustomException;
+import schemas.Adotante;
+import schemas.Protetor;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -62,12 +67,13 @@ public class Welcome extends JFrame {
         textFieldEndereco.setBackground(Color.WHITE);
         textFieldEspecifico.setBackground(Color.WHITE);
 
+
         // Configurar label específico baseado no tipo de usuário
         if ("Protetor".equals(tipoUsuario)) {
-            labelEspecifico.setText("Preferência de Adoção:");
+            labelEspecifico.setText("Tipo:");
             labelBoasVindas.setText("Bem-vindo, Protetor!");
         } else if ("Adotante".equals(tipoUsuario)) {
-            labelEspecifico.setText("Tipo:");
+            labelEspecifico.setText("Preferência de Adoção:");
             labelBoasVindas.setText("Bem-vindo, Adotante!");
         }
 
@@ -89,10 +95,7 @@ public class Welcome extends JFrame {
     private void preencherDadosUsuario() {
         try {
             if (usuario == null) return;
-            // Usar reflexão para acessar os campos do objeto usuário
             Class<?> clazz = usuario.getClass();
-
-            // Campos comuns (verifica disponibilidade dos métodos)
             try { textFieldNome.setText((String) clazz.getMethod("getNome").invoke(usuario)); } catch (Exception ignored) {}
             try { textFieldEmail.setText((String) clazz.getMethod("getEmail").invoke(usuario)); } catch (Exception ignored) {}
             try { textFieldDocumento.setText((String) clazz.getMethod("getDocumento").invoke(usuario)); } catch (Exception ignored) {}
@@ -101,9 +104,9 @@ public class Welcome extends JFrame {
 
             // Campo específico
             if ("Protetor".equals(tipoUsuario)) {
-                try { textFieldEspecifico.setText((String) clazz.getMethod("getPreferenciaAdocao").invoke(usuario)); } catch (Exception ignored) {}
-            } else if ("Adotante".equals(tipoUsuario)) {
                 try { textFieldEspecifico.setText((String) clazz.getMethod("getTipo").invoke(usuario)); } catch (Exception ignored) {}
+            } else if ("Adotante".equals(tipoUsuario)) {
+                try { textFieldEspecifico.setText((String) clazz.getMethod("getPreferenciaAdocao").invoke(usuario)); } catch (Exception ignored) {}
             }
 
         } catch (Exception e) {
@@ -165,46 +168,50 @@ public class Welcome extends JFrame {
         return usuario;
     }
 
-    /**
-     * Método main para testar a tela de boas-vindas
-     * (Este método seria usado para desenvolvimento/teste)
-     */
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            // Exemplo de uso - substituir por dados reais do login
-            // Aqui você passaria o objeto Protetor ou Adotante obtido do login
+            // Prompt para email e senha
+            String email = JOptionPane.showInputDialog(null, "Digite o email:", "Login", JOptionPane.QUESTION_MESSAGE);
+            if (email == null || email.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Email não informado.", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-            // Exemplo com dados mock
-            Welcome welcomeFrame = new Welcome("Protetor", criarUsuarioMock("Protetor"));
-            welcomeFrame.setVisible(true);
+            String senha = JOptionPane.showInputDialog(null, "Digite a senha:", "Login", JOptionPane.QUESTION_MESSAGE);
+            if (senha == null || senha.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Senha não informada.", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            try {
+                LoginDAO loginDAO = new LoginDAO();
+
+                // Tentar login como Adotante
+                Adotante adotante = loginDAO.loginAdotante(email, senha);
+                if (adotante != null) {
+                    JOptionPane.showMessageDialog(null, "Login realizado como Adotante!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                    Welcome welcomeFrame = new Welcome("Adotante", adotante);
+                    welcomeFrame.setVisible(true);
+                    return;
+                }
+
+                // Tentar login como Protetor
+                Protetor protetor = loginDAO.loginProtetor(email, senha);
+                if (protetor != null) {
+                    JOptionPane.showMessageDialog(null, "Login realizado como Protetor!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                    Welcome welcomeFrame = new Welcome("Protetor", protetor);
+                    welcomeFrame.setVisible(true);
+                    return;
+                }
+
+                // Se nenhum login funcionou
+                JOptionPane.showMessageDialog(null, "Email ou senha incorretos!", "Erro de Login", JOptionPane.ERROR_MESSAGE);
+
+            } catch (CustomException e) {
+                JOptionPane.showMessageDialog(null, "Erro ao realizar login: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            }
         });
-    }
-
-    /**
-     * Método auxiliar para criar um usuário mock para teste
-     */
-    private static Object criarUsuarioMock(String tipo) {
-        if ("Protetor".equals(tipo)) {
-            // Criar uma instância mock de Protetor
-            return new Object() {
-                public String getNome() { return "João Silva"; }
-                public String getEmail() { return "joao@email.com"; }
-                public String getDocumento() { return "123456789"; }
-                public String getTelefone() { return "11987654321"; }
-                public String getEndereco() { return "Rua A, 123"; }
-                public String getPreferenciaAdocao() { return "Cachorros"; }
-            };
-        } else {
-            // Criar uma instância mock de Adotante
-            return new Object() {
-                public String getNome() { return "Lucas Pereira"; }
-                public String getEmail() { return "lucas@email.com"; }
-                public String getDocumento() { return "111222333"; }
-                public String getTelefone() { return "11432109876"; }
-                public String getEndereco() { return "Rua F, 303"; }
-                public String getTipo() { return "Individual"; }
-            };
-        }
     }
 
     // Adicionando método initComponents para inicializar a UI quando o .form não for carregado
