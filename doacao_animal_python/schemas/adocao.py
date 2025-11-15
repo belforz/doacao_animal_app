@@ -12,5 +12,5 @@ class Adocao:
     descricao: str
     termos: str
     processoAdocao: ProcessoAdocao
-    suportes: List[SuportePosAdocao] = field(default_factory=list)
     id_processo: int
+    suportes: List[SuportePosAdocao] = field(default_factory=list)

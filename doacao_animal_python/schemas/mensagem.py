@@ -1,7 +1,7 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from datetime import datetime as dt
-
-from .processo_adocao import ProcessoAdocao
 
 
 @dataclass
@@ -13,5 +13,5 @@ class Mensagem:
     idDestinatario: int
     tipoRemetente: str
     tipoDestinatario: str
-    processoAdocao: ProcessoAdocao
+    processoAdocao: "ProcessoAdocao"
     id_processo: int

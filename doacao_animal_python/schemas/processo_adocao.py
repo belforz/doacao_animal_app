@@ -1,14 +1,15 @@
+from __future__ import annotations
+
 from datetime import datetime as dt
 from typing import List
 
 from .adotante import Adotante
 from .animal import Animal
 from .etapa_processo import EtapaProcesso
-from .mensagem import Mensagem
 from .status_processo import StatusProcesso
 
 class ProcessoAdocao:
-    def __init__(self, idPAdocao: int, animal: Animal, adotante: Adotante, statusProcesso: StatusProcesso, dataInicio: dt, id_animal: int, id_adotante: int, etapas: List[EtapaProcesso] = [], mensagens: List[Mensagem] = []):
+    def __init__(self, idPAdocao: int, animal: Animal, adotante: Adotante, statusProcesso: StatusProcesso, dataInicio: dt, id_animal: int, id_adotante: int, etapas: List[EtapaProcesso] = [], mensagens: List["Mensagem"] = []):
         self.idPAdocao = idPAdocao
         self.animal = animal
         self.adotante = adotante
