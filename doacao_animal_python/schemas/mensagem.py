@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime as dt
+from typing import Optional
 
 
 @dataclass
@@ -11,7 +12,7 @@ class Mensagem:
     conteudo: str
     idRemetente: int
     idDestinatario: int
-    tipoRemetente: str
-    tipoDestinatario: str
-    processoAdocao: "ProcessoAdocao"
-    id_processo: int
+    tipoRemetente: Optional[str] = None
+    tipoDestinatario: Optional[str] = None
+    processoAdocao: Optional["ProcessoAdocao"] = None
+    id_processo: Optional[int] = None

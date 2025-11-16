@@ -12,7 +12,6 @@ class LoginDAO:
         cursor = connection.cursor(dictionary=True)
         sql = "SELECT * FROM Adotante WHERE email = %s AND senha = %s"
         try:
-            cursor = connection.cursor()
             cursor.execute(sql, (email, senha))
             row = cursor.fetchone()
             if row:
@@ -35,7 +34,6 @@ class LoginDAO:
         cursor = connection.cursor(dictionary=True)
         sql = "SELECT * FROM Protetor WHERE email = %s AND senha = %s"
         try:
-            cursor = connection.cursor(dictionary=True)
             cursor.execute(sql, (email, senha))
             row = cursor.fetchone()
             if row:

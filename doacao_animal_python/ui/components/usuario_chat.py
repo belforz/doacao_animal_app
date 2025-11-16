@@ -16,50 +16,66 @@ from DAO.chat_dao import ChatDAO
 from exceptions.custom_exception import CustomException
 
 
-class UsuarioChat(tk.Tk):
+class UsuarioChat(tk.Frame):
     """Simple chat UI that works for either Adotante or Protetor.
     It uses ChatDAO to send messages and to load conversation history.
 
     Usage: run `python ui/usuario_chat.py` and fill the IDs for sender/receiver.
     """
 
-    def __init__(self):
-        super().__init__()
-        self.title("Chat")
-        self.geometry("800x520")
-        self.resizable(True, True)
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+
+        # Estilos padronizados com o login
+        style = ttk.Style(self)
+        style.theme_use('clam')
+        style.configure('Card.TFrame', background='#E9ECEF')
+        style.configure('Heading.TLabel', background='#E9ECEF', font=('Segoe UI', 20, 'bold'), foreground='#222')
+        style.configure('Label.TLabel', background='#E9ECEF', font=('Segoe UI', 12), foreground='#111')
+        style.configure('TEntry', padding=6)
+        style.configure('Accent.TButton', background="#4B6EF6", foreground='white', font=('Segoe UI', 12, 'bold'))
+        style.map('Accent.TButton',
+              background=[('active', '#3751c8'), ('pressed', '#2d43a6'), ('!active', '#4B6EF6')],
+              foreground=[('disabled', '#bdbdbd'), ('!disabled', 'white')])
 
         # Header / controls
-        header = ttk.Frame(self)
-        header.pack(fill=tk.X, padx=12, pady=(8, 4))
+        header = ttk.Frame(self, style='Card.TFrame')
+        header.pack(fill=tk.X, padx=24, pady=(20, 4))
 
-        ttk.Label(header, text="Remetente ID:").grid(row=0, column=0, sticky='w')
+        ttk.Label(header, text="Remetente ID:", style='Label.TLabel').grid(row=0, column=0, sticky='w')
         self.entry_sender = ttk.Entry(header, width=8)
         self.entry_sender.grid(row=0, column=1, padx=(4, 12))
 
-        ttk.Label(header, text="Destinatário ID:").grid(row=0, column=2, sticky='w')
+        ttk.Label(header, text="Destinatário ID:", style='Label.TLabel').grid(row=0, column=2, sticky='w')
         self.entry_dest = ttk.Entry(header, width=8)
         self.entry_dest.grid(row=0, column=3, padx=(4, 12))
 
-        ttk.Label(header, text="Tipo Remetente:").grid(row=0, column=4, sticky='w')
+        ttk.Label(header, text="Tipo Remetente:", style='Label.TLabel').grid(row=0, column=4, sticky='w')
         self.combo_tipo_rem = ttk.Combobox(header, values=["Adotante", "Protetor"], width=10, state='readonly')
         self.combo_tipo_rem.current(0)
         self.combo_tipo_rem.grid(row=0, column=5, padx=(4, 12))
 
-        ttk.Label(header, text="Tipo Dest:").grid(row=0, column=6, sticky='w')
+        ttk.Label(header, text="Tipo Destinatário:", style='Label.TLabel').grid(row=0, column=6, sticky='w')
         self.combo_tipo_dest = ttk.Combobox(header, values=["Adotante", "Protetor"], width=10, state='readonly')
         self.combo_tipo_dest.current(1)
         self.combo_tipo_dest.grid(row=0, column=7, padx=(4, 12))
 
-        self.btn_load = ttk.Button(header, text="Carregar conversa", command=self.load_conversation)
-        self.btn_load.grid(row=0, column=8, padx=(6, 0))
+        ttk.Label(header, text="ID Processo:", style='Label.TLabel').grid(row=0, column=8, sticky='w')
+        self.entry_id_processo = ttk.Entry(header, width=8)
+        self.entry_id_processo.grid(row=0, column=9, padx=(4, 12))
+
+        self.btn_load = ttk.Button(header, text="Carregar conversa", style='Accent.TButton', command=self.load_conversation)
+        self.btn_load.grid(row=0, column=10, padx=(6, 0))
 
         # Main chat area: scrollable canvas with message frames (for bubble layout)
-        body = ttk.Frame(self)
-        body.pack(fill=tk.BOTH, expand=True, padx=12, pady=(4, 8))
+        body = ttk.Frame(self, style='Card.TFrame')
+        # Use grid inside this frame so the canvas can expand vertically and horizontally
+        body.pack(fill=tk.BOTH, expand=True, padx=24, pady=(4, 20))
+        body.grid_rowconfigure(0, weight=1)
+        body.grid_columnconfigure(0, weight=1)
 
-        # Styles for bubbles
-        style = ttk.Style(self)
+        # Styles for bubbles (ajustados para combinar)
         style.configure('Sent.TLabel', background='#D6E9FF', foreground='#072b68', padding=8, font=('Segoe UI', 10))
         style.configure('Recv.TLabel', background='#F3F4F6', foreground='#111', padding=8, font=('Segoe UI', 10))
         style.configure('Timestamp.TLabel', background='#E9ECEF', foreground='#666', font=('Segoe UI', 8))
@@ -67,8 +83,9 @@ class UsuarioChat(tk.Tk):
         self.canvas = tk.Canvas(body, borderwidth=0, highlightthickness=0, background='#E9ECEF')
         self.scrollbar = ttk.Scrollbar(body, orient='vertical', command=self.canvas.yview)
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
-        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        # place with grid so it expands properly
+        self.canvas.grid(row=0, column=0, sticky='nsew')
+        self.scrollbar.grid(row=0, column=1, sticky='ns')
 
         self.messages_frame = ttk.Frame(self.canvas, style='Card.TFrame')
         self.canvas.create_window((0, 0), window=self.messages_frame, anchor='nw')
@@ -84,14 +101,18 @@ class UsuarioChat(tk.Tk):
         self._displayed_messages = []
 
         # Composer
-        composer = ttk.Frame(self)
-        composer.pack(fill=tk.X, padx=12, pady=(0, 12))
+        composer = ttk.Frame(self, style='Card.TFrame')
+        composer.pack(fill=tk.X, padx=24, pady=(0, 20))
+        composer.grid_columnconfigure(0, weight=1)
 
-        self.entry_message = ttk.Entry(composer, font=("Segoe UI", 11))
-        self.entry_message.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 8))
+        self.entry_message = ttk.Entry(composer, font=("Segoe UI", 12))
+        self.entry_message.grid(row=0, column=0, sticky='ew', padx=(0, 8), pady=6)
 
-        self.btn_send = ttk.Button(composer, text="Enviar", command=self.on_send)
-        self.btn_send.pack(side=tk.RIGHT)
+        self.btn_send = ttk.Button(composer, text="Enviar", style='Accent.TButton', command=self.on_send)
+        self.btn_send.grid(row=0, column=1)
+        
+        self.btn_back = ttk.Button(composer, text="Voltar", style='Accent.TButton', command=self.on_back)
+        self.btn_back.grid(row=0, column=2)
 
         # Polling flag
         self._polling = False
@@ -155,14 +176,19 @@ class UsuarioChat(tk.Tk):
             return
 
         try:
-            conv = ChatDAO.get_conversation(id_sender, id_dest)
-            self.txt_history.configure(state='normal')
-            self.txt_history.delete('1.0', tk.END)
-            for m in conv:
-                ts = m.dataMensagem if hasattr(m, 'dataMensagem') else dt.now()
-                who = f"{m.idRemetente} ({m.tipoRemetente})"
-                self.txt_history.insert(tk.END, f"[{ts}] {who}: {m.conteudo}\n")
-            self.txt_history.configure(state='disabled')
+            # optional process id filter
+            id_processo = None
+            pid = self.entry_id_processo.get().strip()
+            if pid:
+                try:
+                    id_processo = int(pid)
+                except ValueError:
+                    messagebox.showwarning("ID Processo inválido", "Informe um ID de processo numérico ou deixe em branco.")
+                    return
+
+            conv = ChatDAO.get_conversation(id_sender, id_dest, id_processo)
+            # display using bubble widgets
+            self.display_messages(conv, id_sender)
         except CustomException as e:
             messagebox.showerror("Erro", f"Erro ao carregar conversa: {e}")
 
@@ -182,15 +208,27 @@ class UsuarioChat(tk.Tk):
         tipo_dest = self.combo_tipo_dest.get()
 
         try:
-            ChatDAO.send_message(id_sender, id_dest, conteudo, tipo_remetente=tipo_rem, tipo_destinatario=tipo_dest)
-            # append locally and clear
-            now = dt.now().strftime('%Y-%m-%d %H:%M:%S')
-            self.append_history(f"[{now}] {id_sender} ({tipo_rem}): {conteudo}")
+            id_processo = None
+            pid = self.entry_id_processo.get().strip()
+            if pid:
+                try:
+                    id_processo = int(pid)
+                except ValueError:
+                    messagebox.showwarning("ID Processo inválido", "Informe um ID de processo numérico ou deixe em branco.")
+                    return
+
+            ChatDAO.send_message(id_sender, id_dest, conteudo, tipo_remetente=tipo_rem, tipo_destinatario=tipo_dest, id_processo=id_processo)
+            # reload conversation to include the new message
             self.entry_message.delete(0, tk.END)
+            self.load_conversation()
         except CustomException as e:
             messagebox.showerror("Erro ao enviar", f"Erro ao enviar mensagem: {e}")
+    
+    def on_back(self):
+        messagebox.showinfo("Voltar", "Voltando para tela anterior")
+        if self.controller:
+            self.controller.show_frame("Welcome")
+        
 
 
-if __name__ == '__main__':
-    app = UsuarioChat()
-    app.mainloop()
+

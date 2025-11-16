@@ -17,16 +17,14 @@ from DAO.login_dao import LoginDAO
 from exceptions.custom_exception import CustomException
 
 def load_asset(path):
-    base = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    base = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))  # ui directory
     assets = os.path.join(base, "assets")
     return os.path.join(assets, path)
 
-class Login(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.title("Sistema de Adoção Animal - Login")
-        self.geometry("480x440")
-        self.resizable(False, False)
+class Login(tk.Frame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
 
         # Estilos suaves com ttk
         style = ttk.Style(self)
@@ -56,29 +54,25 @@ class Login(tk.Tk):
 
         # Label logo (row 0, col 1)
         self.label_logo = ttk.Label(self.painel_principal, text="Logo", style='Heading.TLabel')
-        self.label_logo.grid(row=0, column=1, pady=(0, 18))
+        self.label_logo.grid(row=0, column=1, columnspan=2, pady=(0, 18), sticky='ew')
 
         # Carregar logo se existir
         logo_img = None
-        for fname in ("logo.png", "logo.jpg", "logo.gif", "logo.bmp", "logo (1).jpg"):
-            path = load_asset(fname)
-            if os.path.exists(path):
+        fname = "logo.jpg"
+        path = load_asset(fname)
+        if os.path.exists(path):
+            try:
+                logo_img = tk.PhotoImage(file=path)
+            except Exception:
                 try:
-                    if fname.lower().endswith(('.png', '.gif')):
-                        logo_img = tk.PhotoImage(file=path)
-                    else:
-                        try:
-                            from PIL import Image, ImageTk
-                            img = Image.open(path)
-                            logo_img = ImageTk.PhotoImage(img)
-                        except ImportError:
-                            logo_img = None
+                    from PIL import Image, ImageTk
+                    img = Image.open(path)
+                    logo_img = ImageTk.PhotoImage(img)
                 except Exception:
                     logo_img = None
             if logo_img:
                 self.label_logo.config(image=logo_img, text="")
-                self.label_logo.image = logo_img  # Manter referência
-                break
+                self.label_logo.image = logo_img 
 
         # Label Email (row 1, col 0)
         self.label_email = ttk.Label(self.painel_principal, text="Email:", style='Label.TLabel')
@@ -134,15 +128,13 @@ class Login(tk.Tk):
                 adotante = login_dao.loginAdotante(email, senha)
                 if adotante:
                     messagebox.showinfo("Sucesso", "Login realizado com sucesso como Adotante!")
-                    self.destroy()
-                    # Aqui você pode abrir a próxima tela, ex: Welcome("Adotante", adotante)
+                    self.controller.show_frame("Welcome", tipoUsuario="Adotante", usuario=adotante)
                     return
             elif tipo_selecionado == "Protetor":
                 protetor = login_dao.loginProtetor(email, senha)
                 if protetor:
                     messagebox.showinfo("Sucesso", "Login realizado com sucesso como Protetor!")
-                    self.destroy()
-                    # Aqui você pode abrir a próxima tela, ex: Welcome("Protetor", protetor)
+                    self.controller.show_frame("Welcome", tipoUsuario="Protetor", usuario=protetor)
                     return
 
             messagebox.showerror("Erro de Login", "Email ou senha incorretos para o tipo selecionado!")
@@ -150,5 +142,4 @@ class Login(tk.Tk):
         except CustomException as e:
             messagebox.showerror("Erro", f"Erro ao realizar login: {e}")
 
-app = Login()
-app.mainloop()
+

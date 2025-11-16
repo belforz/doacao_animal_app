@@ -26,19 +26,39 @@ class ChatDAO:
               raise CustomException(f"Erro ao enviar mensagem: {e}")
           
     @staticmethod
-    def get_conversation(id_user1: int, id_user2: int) -> list[Mensagem]:
+    def get_conversation(id_user1: int, id_user2: int, id_processo: int = None) -> list[Mensagem]:
         conn = MYSQLConnection.get_connection()
+        if conn is None:
+            raise CustomException("Erro ao buscar conversa: sem conexão com o banco de dados")
         cursor = conn.cursor(dictionary=True)
-        sql = """
+        base_sql = """
         SELECT * FROM Mensagem 
-        WHERE (idRemetente = %s AND idDestinatario = %s) 
-           OR (idRemetente = %s AND idDestinatario = %s)
-        ORDER BY dataMensagem ASC
+        WHERE ((idRemetente = %s AND idDestinatario = %s) 
+           OR (idRemetente = %s AND idDestinatario = %s))
         """
+        params = [id_user1, id_user2, id_user2, id_user1]
+        if id_processo:
+            base_sql += " AND id_processo = %s"
+            params.append(id_processo)
+        base_sql += " ORDER BY dataMensagem ASC"
         try:
-            cursor.execute(sql, (id_user1, id_user2, id_user2, id_user1))
+            cursor.execute(base_sql, tuple(params))
             rows = cursor.fetchall()
-            return [Mensagem(**row) for row in rows]
+            messages = []
+            for row in rows:
+                # build Mensagem with optional fields
+                messages.append(Mensagem(
+                    idMensagem=row.get('idMensagem'),
+                    dataMensagem=row.get('dataMensagem'),
+                    conteudo=row.get('conteudo'),
+                    idRemetente=row.get('idRemetente'),
+                    idDestinatario=row.get('idDestinatario'),
+                    tipoRemetente=row.get('tipoRemetente'),
+                    tipoDestinatario=row.get('tipoDestinatario'),
+                    processoAdocao=None,
+                    id_processo=row.get('id_processo')
+                ))
+            return messages
         except Exception as e:
             raise CustomException(f"Erro ao buscar conversa: {e}")
         finally:

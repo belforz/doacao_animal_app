@@ -38,11 +38,11 @@ public class Main {
             Date data = Date.valueOf(localdate);
             // Teste de criar
             // Adotante
-            Adotante adotante = new Adotante(23, "Leandro", "1234568", "Rua B, 488", "macedobeiramar@hotmail.com", "04165672651", "11111111", "Adotante");
+            Adotante adotante = new Adotante(23, "Leandro", "1234568", "Rua B, 488", "macedobeiramar@hotmail.com", "04165672651", "11111111", "Cachorros");
             adotantedao.create(adotante);
             System.out.println("Adotante criado com ID: " + adotante.getId());
             // Protetor
-            Protetor protetor = new Protetor(23, "Leandro Protetor", "2345678", "Rua C, 123", "macedobeiramaru@hotmail.com", "4566567658765", "22222222", "Protetor");
+            Protetor protetor = new Protetor(23, "Leandro Protetor", "2345678", "Rua C, 123", "macedobeiramaru@hotmail.com", "4566567658765", "22222222", "Familia");
             protetordao.create(protetor);
             System.out.println("Protetor criado com ID: " + protetor.getId());
             // Animal
