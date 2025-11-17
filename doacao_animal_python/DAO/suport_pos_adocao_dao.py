@@ -112,7 +112,7 @@ class SuportePosAdocaoDAO:
     def delete(id: int) -> None:
         conn = MYSQLConnection.get_connection()
         cursor = conn.cursor()
-        sql = "DELETE FROM SuportePosAdocao WHERE id = %s"
+        sql = "DELETE FROM SuportePosAdocao WHERE idSuporte = %s"
         try:
             cursor.execute(sql, (id,))
             conn.commit()

@@ -1,4 +1,5 @@
 from datetime import datetime as dt
+import time
 
 from .status_processo import StatusProcesso
 

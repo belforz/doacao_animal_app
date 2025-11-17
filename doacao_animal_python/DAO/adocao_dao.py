@@ -32,12 +32,16 @@ class AdocaoDAO:
             cursor.execute(sql, (id,))
             row = cursor.fetchone()
             if row:
+                from DAO.processo_adocao_dao import ProcessoAdocaoDAO
+                processo = ProcessoAdocaoDAO.read(row['id_processo'])
                 return Adocao(
-                    id=row['idAdocao'],
+                    idAdocao=row['idAdocao'],
                     dataAdocao=row['dataAdocao'],
                     descricao=row['descricao'],
                     termos=row['termos'],
-                    id_processo=row['id_processo']
+                    processoAdocao=processo,
+                    id_processo=row['id_processo'],
+                    suportes=[]
                 )
             return None
         except Exception as e:
@@ -74,7 +78,7 @@ class AdocaoDAO:
         """
         try:
             cursor.execute(sql, (
-                adocao.dataAdocao, adocao.descricao, adocao.termos, adocao.id_processo, adocao.id
+                adocao.dataAdocao, adocao.descricao, adocao.termos, adocao.id_processo, adocao.idAdocao
             ))
             conn.commit()
             print("Adoção atualizada com sucesso!")

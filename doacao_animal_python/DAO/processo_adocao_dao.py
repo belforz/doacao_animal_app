@@ -38,11 +38,12 @@ class ProcessoAdocaoDAO:
                 adotante = AdotanteDAO.read(row['id_adotante'])
                 etapas = []
                 mensagens = []
+                from schemas.status_processo import StatusProcesso
                 return ProcessoAdocao(
                     idPAdocao=row['idPAdocao'],
                     animal=animal,
                     adotante=adotante,
-                    statusProcesso=row['statusProcesso'],
+                    statusProcesso=StatusProcesso(row['status']),
                     dataInicio=row['dataInicio'],
                     id_animal=row['id_animal'],
                     id_adotante=row['id_adotante'],
@@ -71,11 +72,12 @@ class ProcessoAdocaoDAO:
                 adotante = AdotanteDAO.read(row['id_adotante'])
                 etapas = []
                 mensagens = []
+                from schemas.status_processo import StatusProcesso
                 processos.append(ProcessoAdocao(
                     idPAdocao=row['idPAdocao'],
                     animal=animal,
                     adotante=adotante,
-                    statusProcesso=row['statusProcesso'],
+                    statusProcesso=StatusProcesso(row['status']),
                     dataInicio=row['dataInicio'],
                     id_animal=row['id_animal'],
                     id_adotante=row['id_adotante'],
@@ -94,7 +96,7 @@ class ProcessoAdocaoDAO:
         cursor = conn.cursor()
         sql = """
         UPDATE ProcessoAdocao SET id_animal=%s, id_adotante=%s, status=%s, dataInicio=%s
-        WHERE id=%s
+        WHERE idPAdocao=%s
         """
         try:
             cursor.execute(sql, (
@@ -111,7 +113,7 @@ class ProcessoAdocaoDAO:
     def delete(id: int) -> None:
         conn = MYSQLConnection.get_connection()
         cursor = conn.cursor()
-        sql = "DELETE FROM ProcessoAdocao WHERE id = %s"
+        sql = "DELETE FROM ProcessoAdocao WHERE idPAdocao = %s"
         try:
             cursor.execute(sql, (id,))
             conn.commit()

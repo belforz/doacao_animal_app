@@ -1,3 +1,6 @@
+
+from datetime import date, datetime
+
 from DAO.adotante_dao import AdotanteDAO
 from DAO.protetor_dao import ProtetorDAO
 from DAO.animal_dao import AnimalDAO
@@ -22,121 +25,269 @@ from schemas.status_processo import StatusProcesso
 from repository.mysql_connection import MYSQLConnection
 from exceptions.custom_exception import CustomException
 
-from datetime import date, datetime
+
+def recuperar_id_inserido(tabela: str, coluna_id: str, coluna_filtro: str, valor_filtro: str):
+    """
+    Recupera o ID do último registro inserido baseado em um filtro único.
+    
+    Args:
+        tabela: Nome da tabela no banco
+        coluna_id: Nome da coluna de ID (PK)
+        coluna_filtro: Nome da coluna para filtrar (ex: 'email')
+        valor_filtro: Valor a ser buscado
+        
+    Returns:
+        ID do registro ou None se não encontrado
+    """
+    conn = MYSQLConnection.get_connection()
+    cursor = conn.cursor(dictionary=True)
+    sql = f"SELECT {coluna_id} FROM {tabela} WHERE {coluna_filtro} = %s ORDER BY {coluna_id} DESC LIMIT 1"
+    cursor.execute(sql, (valor_filtro,))
+    row = cursor.fetchone()
+    cursor.close()
+    return row[coluna_id] if row else None
+
+
+def imprimir_secao(titulo: str):
+    """Imprime um cabeçalho de seção para organizar a saída."""
+    print(f"\n{'='*60}")
+    print(f"  {titulo}")
+    print(f"{'='*60}")
+
+
+def main():
+    """Função principal que executa todos os testes de CRUD."""
+    try:
+        # ====================================================================
+        # INICIALIZAÇÃO DOS DAOs
+        # ====================================================================
+        imprimir_secao("Inicializando DAOs")
+        
+        adotante_dao = AdotanteDAO()
+        protetor_dao = ProtetorDAO()
+        animal_dao = AnimalDAO()
+        foto_animal_dao = FotoAnimalDAO()
+        mensagem_dao = MensagemDAO()
+        processo_adocao_dao = ProcessoAdocaoDAO()
+        suporte_pos_adocao_dao = SuportePosAdocaoDAO()
+        etapa_processo_dao = EtapaProcessoDAO()
+        adocao_dao = AdocaoDAO()
+        
+        print("✓ Todos os DAOs inicializados com sucesso!")
+
+        # ====================================================================
+        # CRIAÇÃO DE REGISTROS (CREATE)
+        # ====================================================================
+        data_hoje = date.today()
+        data_hora_atual = datetime.now()
+        
+        imprimir_secao("Criando Adotante")
+        adotante = Adotante(
+            0, 
+            "Maria Silva Costa", 
+            "maria.silva@example.com", 
+            "456789168796", 
+            "11987654321", 
+            "senha123", 
+            "Av. Paulista, 1000 - São Paulo/SP", 
+            "Gatos e Cachorros de porte pequeno"
+        )
+        adotante_dao.create(adotante)
+        id_adotante = recuperar_id_inserido("Adotante", "idAdotante", "email", adotante.email)
+        if id_adotante:
+            adotante = adotante_dao.read(id_adotante)
+            print(f"✓ Adotante '{adotante.nome}' criado com ID: {adotante.id}")
+
+        imprimir_secao("Criando Protetor")
+        protetor = Protetor(
+            0, 
+            "João Pedro Santos", 
+            "joao.santos@ongprotecao.org", 
+            "789456128697", 
+            "11912345678", 
+            "protetor456", 
+            "Rua das Flores, 500 - Campinas/SP", 
+            "ONG"
+        )
+        protetor_dao.create(protetor)
+        id_protetor = recuperar_id_inserido("Protetor", "idProtetor", "email", protetor.email)
+        if id_protetor:
+            protetor = protetor_dao.read(id_protetor)
+            print(f"✓ Protetor '{protetor.nome}' criado com ID: {protetor.id}")
+
+        imprimir_secao("Criando Animal")
+        animal = Animal(
+            0, 
+            "Gato", 
+            "Persa", 
+            "Calmo e carinhoso", 
+            "Vacinado, castrado, vermifugado", 
+            "Mimi", 
+            "Gata persa de 3 anos, muito dócil e ótima com crianças", 
+            False, 
+            3, 
+            "F", 
+            "Disponível", 
+            protetor, 
+            []
+        )
+        animal_dao.create(animal)
+        id_animal = recuperar_id_inserido("Animal", "idAnimal", "nome", animal.nome)
+        if id_animal:
+            animal = animal_dao.read(id_animal)
+            print(f"✓ Animal '{animal.nome}' ({animal.especie}) criado com ID: {animal.idAnimal}")
+
+        imprimir_secao("Criando Foto do Animal")
+        foto_animal = FotoAnimal(
+            "https://images.example.com/mimi-foto1.jpg", 
+            "Foto de perfil da Mimi", 
+            animal.idAnimal, 
+            0
+        )
+        foto_animal_dao.create(foto_animal)
+        print(f"✓ Foto do animal '{animal.nome}' cadastrada")
+
+        imprimir_secao("Criando Processo de Adoção")
+        processo_adocao = ProcessoAdocao(
+            0, 
+            animal, 
+            adotante, 
+            StatusProcesso.ENTREVISTA, 
+            data_hoje, 
+            animal.idAnimal, 
+            adotante.id, 
+            [], 
+            []
+        )
+        processo_adocao_dao.create(processo_adocao)
+        id_processo = recuperar_id_inserido("ProcessoAdocao", "idPAdocao", "id_animal", animal.idAnimal)
+        if id_processo:
+            processo_adocao = processo_adocao_dao.read(id_processo)
+            status_valor = processo_adocao.statusProcesso.value if hasattr(processo_adocao.statusProcesso, 'value') else str(processo_adocao.statusProcesso)
+            print(f"✓ Processo de Adoção iniciado com ID: {processo_adocao.idPAdocao} - Status: {status_valor}")
+
+        imprimir_secao("Criando Mensagem")
+        mensagem = Mensagem(
+            0, 
+            data_hora_atual, 
+            "Olá! Estou muito interessada em adotar a Mimi. Podemos agendar uma visita?", 
+            adotante.id, 
+            protetor.id, 
+            "Adotante", 
+            "Protetor", 
+            processo_adocao, 
+            processo_adocao.idPAdocao
+        )
+        mensagem_dao.create(mensagem)
+        print(f"✓ Mensagem enviada de {adotante.nome} para {protetor.nome}")
+
+        imprimir_secao("Criando Etapa do Processo")
+        etapa = EtapaProcesso(
+            0, 
+            data_hoje, 
+            "Entrevista inicial agendada para verificar compatibilidade", 
+            "ENTREVISTA", 
+            processo_adocao.idPAdocao, 
+            StatusProcesso.ENTREVISTA.value
+        )
+        etapa_processo_dao.create(etapa)
+        print(f"✓ Etapa '{etapa.tipoEtapa}' criada para o processo {processo_adocao.idPAdocao}")
+
+        imprimir_secao("Criando Adoção")
+        adocao = Adocao(
+            0, 
+            data_hoje, 
+            "Adoção da gata Mimi para Maria Silva Costa", 
+            "Termo de adoção assinado. Compromisso de cuidados veterinários e bem-estar.", 
+            processo_adocao, 
+            processo_adocao.idPAdocao, 
+            []
+        )
+        adocao_dao.create(adocao)
+       
+        id_adocao = recuperar_id_inserido("Adocao", "idAdocao", "id_processo", processo_adocao.idPAdocao)
+        if id_adocao:
+            adocao = adocao_dao.read(id_adocao)
+        print(f"✓ Adoção registrada: {adocao.descricao}")
+
+        imprimir_secao("Criando Suporte Pós-Adoção")
+        suporte = SuportePosAdocao(
+            0, 
+            data_hoje, 
+            "Consulta Veterinária", 
+            "Primeira consulta veterinária pós-adoção para check-up geral", 
+            adocao.idAdocao
+        )
+        suporte_pos_adocao_dao.create(suporte)
+        print(f"✓ Suporte pós-adoção registrado: {suporte.tipoSolicitacao}")
+
+        # ====================================================================
+        # LEITURA DE REGISTROS (READ)
+        # ====================================================================
+        imprimir_secao("Testando Leitura de Registros")
+        
+        adotante_lido = adotante_dao.read(adotante.id)
+        if adotante_lido:
+            print(f"✓ Adotante: {adotante_lido.nome} - {adotante_lido.email}")
+        
+        protetor_lido = protetor_dao.read(protetor.id)
+        if protetor_lido:
+            print(f"✓ Protetor: {protetor_lido.nome} - Tipo: {protetor_lido.tipo}")
+        
+        animal_lido = animal_dao.read(animal.idAnimal)
+        if animal_lido:
+            print(f"✓ Animal: {animal_lido.nome} ({animal_lido.especie} - {animal_lido.raca})")
+        
+        processo_lido = processo_adocao_dao.read(processo_adocao.idPAdocao)
+        if processo_lido:
+            status = getattr(processo_lido, 'statusProcesso', getattr(processo_lido, 'status', None))
+            print(f"✓ Processo de Adoção: Status {status}")
+        
+        adocao_lida = adocao_dao.read(adocao.idAdocao)
+        if adocao_lida:
+            print(f"✓ Adoção: {adocao_lida.descricao}")
+
+        # ====================================================================
+        # ATUALIZAÇÃO DE REGISTROS (UPDATE)
+        # ====================================================================
+        imprimir_secao("Testando Atualização de Registros")
+        
+        adotante.nome = "Maria Silva Costa Oliveira"
+        adotante_dao.update(adotante)
+        print(f"✓ Adotante atualizado: {adotante.nome}")
+        
+        protetor.nome = "João Pedro Santos Silva"
+        protetor_dao.update(protetor)
+        print(f"✓ Protetor atualizado: {protetor.nome}")
+        
+        animal.nome = "Mimi (Adotada)"
+        animal_dao.update(animal)
+        print(f"✓ Animal atualizado: {animal.nome}")
+
+        # ====================================================================
+        # EXCLUSÃO DE REGISTROS (DELETE)
+        # ====================================================================
+        imprimir_secao("Testando Exclusão de Registros")
+        
+        mensagem_dao.delete(mensagem.idMensagem)
+        print(f"✓ Mensagem deletada (ID: {mensagem.idMensagem})")
+        
+        etapa_processo_dao.delete(etapa.id)
+        print(f"✓ Etapa de processo deletada (ID: {etapa.id})")
+        
+        suporte_pos_adocao_dao.delete(suporte.idSuporte)
+        print(f"✓ Suporte pós-adoção deletado (ID: {suporte.idSuporte})")
+
+        imprimir_secao("✅ TODOS OS BATCHS CONCLUÍDOS COM SUCESSO!")
+
+    except CustomException as ce:
+        print(f"\n❌ Erro personalizado: {ce}")
+    except Exception as ex:
+        print(f"\n❌ Erro inesperado: {ex}")
+        import traceback
+        traceback.print_exc()
 
 
 if __name__ == "__main__":
-    try:
-        # Teste de criação do DAO
-        adotantedao = AdotanteDAO()
-        protetordao = ProtetorDAO()
-        animaldao = AnimalDAO()
-        fotoanimaldao = FotoAnimalDAO()
-        mensagemdao = MensagemDAO()
-        processoadocaodao = ProcessoAdocaoDAO()
-        suporteposadocaodao = SuportePosAdocaoDAO()
-        etapaprocessodao = EtapaProcessoDAO()
-        adocaodao = AdocaoDAO()
-
-        print("DAO Adotante criado com sucesso!" + str(adotantedao))
-        print("DAO Protetor criado com sucesso!" + str(protetordao))
-        print("DAO Animal criado com sucesso!" + str(animaldao))
-        print("DAO FotoAnimal criado com sucesso!" + str(fotoanimaldao))
-        print("DAO Mensagem criado com sucesso!" + str(mensagemdao))
-        print("DAO ProcessoAdocao criado com sucesso!" + str(processoadocaodao))
-        print("DAO SuportePosAdocao criado com sucesso!" + str(suporteposadocaodao))
-        print("DAO EtapaProcesso criado com sucesso!" + str(etapaprocessodao))
-        print("DAO Adocao criado com sucesso!" + str(adocaodao))
-
-        data = date.today()
-        dt = datetime.now()
-
-        # Teste de criar
-        # Adotante
-        adotante = Adotante(id=0, nome="Leandro", documento="123456898", endereco="Rua B, 488", email="macedobeiramar@hotmail.com", telefone="04165672651", senha="11111111", preferenciaAdocao="Familia")
-        adotantedao.create(adotante)
-        print("Adotante criado com ID: " + str(adotante.id))
-        # Protetor
-        protetor = Protetor(id=0, nome="Leandro Protetor", documento="23456788798", endereco="Rua C, 123", email="macedobeiramaru@hotmail.com", telefone="4566567658765", senha="22222222", tipo="Familia")
-        protetordao.create(protetor)
-        print("Protetor criado com ID: " + str(protetor.id))
-        # Animal
-        animal = Animal(id=0, nome="Rex", especie="Cachorro", raca="Labrador", temperamento="Bom", sexo="Masculino", porte="Grande", castrado=False, idade=2, status='M', descricao="BEM", protetor_id=protetor.id)
-        animaldao.create(animal)
-        print("Animal criado com ID: " + str(animal.id))
-        # FotoAnimal
-        fotoAnimal = FotoAnimal(id_foto_animal=0, url="http://example.com/foto1.jpg", descricao="Foto frontal", animal_id=animal.id, protetor_id=protetor.id)
-        fotoanimaldao.create(fotoAnimal)
-        print("FotoAnimal criado com ID: " + str(fotoAnimal.id_foto_animal))
-
-        # ProcessoAdocao
-        processoAdocao = ProcessoAdocao(id_p_adocao=0, animal=animal, adotante=adotante, status=StatusProcesso.ENTREVISTA, data_inicio=data, animal_id=animal.id, adotante_id=adotante.id)
-        processoadocaodao.create(processoAdocao)
-        # Mensagem
-        mensagem = Mensagem(id_mensagem=0, data_mensagem=dt, conteudo="Olá, estou interessado em adotar o Rex.", id_remetente=adotante.id, id_destinatario=protetor.id, tipo_remetente="Adotante", tipo_destinatario="Protetor", processo_adocao=processoAdocao.id_p_adocao)
-        mensagemdao.create(mensagem)
-        print("Mensagem criada com ID: " + str(mensagem.id_mensagem))
-
-        # EtapaProcesso
-        etapa = EtapaProcesso(id=0, data=data, descricao="Entrevista inicial", status="PENDENTE", tipo="ENTREVISTA", processo_adocao_id=processoAdocao.id_p_adocao)
-        etapaprocessodao.create(etapa)
-        print("EtapaProcesso criada com ID: " + str(etapa.id))
-
-        #Adocao
-        adocao = Adocao(id_adocao=0, data_adocao=data, descricao="Adoção concluída", termos="Termos aceitos", processo_adocao_id=processoAdocao.id_p_adocao)
-        adocaodao.create(adocao)
-        print("Adocao criada com ID: " + str(adocao.id_adocao))
-
-        # SuportePosAdocao
-        suporte = SuportePosAdocao(id_suporte=0, data_suporte=data, tipo_suporte="Consulta veterinária", descricao="Ajuda com vacinas", adocao_id=adocao.id_adocao)
-        suporteposadocaodao.create(suporte)
-        print("SuportePosAdocao criado com ID: " + str(suporte.id_suporte))
-
-        # Teste de leitura
-        adt = adotantedao.read(adotante.id)
-        if adt:
-            print("Adotante lido: " + adt.nome)
-        prt = protetordao.read(protetor.id)
-        if prt:
-            print("Protetor lido: " + prt.nome)
-        # Teste de leitura para Animal
-        anm = animaldao.read(animal.id)
-        if anm:
-            print("Animal lido: " + anm.nome)
-        # Teste de leitura para ProcessoAdocao
-        proc = processoadocaodao.read(processoAdocao.id_p_adocao)
-        if proc:
-            print("ProcessoAdocao lido: " + str(proc.status))
-        # Teste de leitura para Adocao
-        ado = adocaodao.read(adocao.id_adocao)
-        if ado:
-            print("Adocao lida: " + ado.descricao)
-
-        # Teste de atualizar
-        adotante.nome = "Leandro Atualizado 2"
-        adotantedao.update(adotante)
-        print("Adotante atualizado para: " + adotante.nome)
-        # Teste de atualizar Protetor
-        protetor.nome = "Protetor Atualizado 2"
-        protetordao.update(protetor)
-        print("Protetor atualizado para: " + protetor.nome)
-        # Teste de atualizar Animal
-        animal.nome = "Rex Atualizado 2 "
-        animaldao.update(animal)
-        print("Animal atualizado para: " + animal.nome)
-
-        # Teste de deletar
-        mensagemdao.delete(mensagem.id_mensagem)
-        print("Mensagem deletada com ID: " + str(mensagem.id_mensagem))
-        # Teste de deletar EtapaProcesso
-        etapaprocessodao.delete(etapa.id)
-        print("EtapaProcesso deletada com ID: " + str(etapa.id))
-        # Teste de deletar SuportePosAdocao
-        suporteposadocaodao.delete(suporte.id_suporte)
-        print("SuportePosAdocao deletado com ID: " + str(suporte.id_suporte))
-
-    except CustomException as ce:
-        print("Erro personalizado: " + str(ce))
-    except Exception as ex:
-        print("Erro inesperado: " + str(ex))
+    main()
     

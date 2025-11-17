@@ -117,7 +117,7 @@ class EtapaProcessoDAO:
     def delete(id: int) -> None:
         conn = MYSQLConnection.get_connection()
         cursor = conn.cursor()
-        sql = "DELETE FROM EtapaProcesso WHERE idEtapaProcesso = %s"
+        sql = "DELETE FROM EtapaProcesso WHERE id = %s"
         try:
             cursor.execute(sql, (id,))
             conn.commit()
