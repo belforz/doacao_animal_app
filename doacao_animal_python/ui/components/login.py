@@ -6,6 +6,7 @@ import sys
 import tkinter as tk
 from tkinter import ttk, messagebox
 
+
 # Adicionar o diretório raiz do projeto ao sys.path para importar módulos
 # Resolve para a pasta do projeto (`doacao_animal_python`) mesmo quando
 # o arquivo é executado diretamente como `python ui/login.py`.
@@ -15,6 +16,7 @@ if project_root not in sys.path:
 
 from DAO.login_dao import LoginDAO
 from exceptions.custom_exception import CustomException
+from repository.mysql_connection import MYSQLConnection
 
 def load_asset(path):
     base = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))  # ui directory
@@ -95,7 +97,7 @@ class Login(tk.Frame):
         self.label_tipo.grid(row=3, column=0, sticky="e", padx=(0, 12), pady=6)
 
         # ComboBox Tipo (row 3, col 1)
-        self.combo_box_tipo = ttk.Combobox(self.painel_principal, values=["Adotante", "Protetor"], state="readonly", font=("Segoe UI", 12))
+        self.combo_box_tipo = ttk.Combobox(self.painel_principal, values=["Adotante", "Protetor", "Admin"], state="readonly", font=("Segoe UI", 12))
         self.combo_box_tipo.current(0)  # Selecionar primeiro por padrão
         self.combo_box_tipo.grid(row=3, column=1, sticky="ew", padx=(0, 10), pady=6)
 
@@ -136,10 +138,19 @@ class Login(tk.Frame):
                     messagebox.showinfo("Sucesso", "Login realizado com sucesso como Protetor!")
                     self.controller.show_frame("Welcome", tipoUsuario="Protetor", usuario=protetor)
                     return
-
-            messagebox.showerror("Erro de Login", "Email ou senha incorretos para o tipo selecionado!")
-
+            elif tipo_selecionado == "Admin":
+                cursor = MYSQLConnection().get_connection().cursor()
+                sql = "SELECT * FROM admin WHERE email = %s AND senha = %s"
+                cursor.execute(sql,(email, senha))
+                admin = cursor.fetchone()
+                if admin:
+                    messagebox.showinfo("Sucesso", "Login realizado com sucesso como Admin!")
+                    self.controller.show_frame("Admin")
+                    return
+                else:
+                    messagebox.showerror("Erro de Login", "Email ou senha incorretos para o tipo selecionado!")
         except CustomException as e:
             messagebox.showerror("Erro", f"Erro ao realizar login: {e}")
-
+        finally:
+            cursor.close()
 

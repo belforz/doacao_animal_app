@@ -10,6 +10,7 @@ if project_root not in sys.path:
 from ui.components.login import Login
 from ui.components.usuario_chat import UsuarioChat
 from ui.components.welcome import WelcomeFrame
+from ui.components.admin import AdminFrame
 
 
 class App:
@@ -31,6 +32,7 @@ class App:
         self.frames["UsuarioChat"] = UsuarioChat(self.root, self)
         # Welcome precisa de dados dinâmicos, então placeholder ou instanciar depois
         self.frames["Welcome"] = None  # Será criado após login
+        self.frames["Admin"] = None  # Será criado quando necessário
 
         # Mostrar frame inicial
         self.show_frame("Login")
@@ -53,10 +55,15 @@ class App:
             if "usuario" in kwargs:
                 self.current_user = kwargs["usuario"]
 
+        if frame_name == "Admin":
+            self.frames["Admin"] = AdminFrame(self.root, self)
+
         # Mostrar o frame desejado
         frame = self.frames[frame_name]
         if frame:
             frame.pack(fill="both", expand=True)
+        else:
+            print(f"Frame {frame_name} não encontrado")
 
     def run(self):
         self.root.mainloop()

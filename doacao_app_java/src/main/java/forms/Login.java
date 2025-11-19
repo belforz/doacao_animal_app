@@ -41,6 +41,7 @@ public class Login extends JFrame {
         // Adiconar opções ao combo box
         comboBoxTipo.addItem("Adotante");
         comboBoxTipo.addItem("Protetor");
+        comboBoxTipo.addItem("Admin");
 
         // Adicionar action listener ao botão de login
         buttonLogin.addActionListener(e -> realizarLogin());
@@ -63,6 +64,24 @@ public class Login extends JFrame {
         }
 
         String tipoSelecionado = (String) comboBoxTipo.getSelectedItem();
+
+        if ("Admin".equals(tipoSelecionado)) {
+            if (email.equals("admin@email.com") && senha.equals("admin")) {
+                JOptionPane.showMessageDialog(this,
+                    "Login realizado com sucesso como ADMIN!",
+                    "Sucesso",
+                    JOptionPane.INFORMATION_MESSAGE);
+                this.dispose();
+                Admin admin = new Admin();
+                admin.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                    "Email ou senha incorretos para Admin!",
+                    "Erro de Login",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+            return;
+        }
 
         try {
             LoginDAO loginDAO = new LoginDAO();

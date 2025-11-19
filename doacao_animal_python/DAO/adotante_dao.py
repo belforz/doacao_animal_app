@@ -5,7 +5,7 @@ from schemas.adotante import Adotante
 
 class AdotanteDAO:
     @staticmethod
-    def create(adotante: Adotante) -> None:
+    def create(adotante: Adotante) -> Adotante:
         conn = MYSQLConnection.get_connection()
         cursor = conn.cursor()
         sql = """
@@ -18,7 +18,12 @@ class AdotanteDAO:
                 adotante.senha, adotante.endereco, adotante.preferenciaAdocao
             ))
             conn.commit()
+            # Pegar o ID gerado
+            adotante_id = cursor.lastrowid
+            # Retornar adotante com ID preenchido
+            adotante.id = adotante_id
             print("Adotante criado com sucesso!")
+            return adotante
         except Exception as e:
             raise CustomException(f"Erro ao criar Adotante: {e}")
         finally:

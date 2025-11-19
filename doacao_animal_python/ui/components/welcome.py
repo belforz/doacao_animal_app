@@ -73,6 +73,10 @@ class WelcomeFrame(tk.Frame):
         self.button_ver_mensagens = ttk.Button(painel, text="Ver Mensagens", style='Accent.TButton', command=self.ver_mensagens)
         self.button_ver_mensagens.grid(row=7, column=3, pady=10)
 
+        if self.tipoUsuario == "Protetor":
+            self.button_admin = ttk.Button(painel, text="Admin", style='Accent.TButton', command=self.ir_para_admin)
+            self.button_admin.grid(row=7, column=4, pady=10)
+
         self.button_logout = ttk.Button(painel, text="Sair", style='Accent.TButton', command=self.logout)
         self.button_logout.grid(row=8, column=2, columnspan=2, pady=10)
 
@@ -129,6 +133,10 @@ class WelcomeFrame(tk.Frame):
         messagebox.showinfo("Mensagens", "Visualizando mensagens")
         if self.controller:
             self.controller.show_frame("UsuarioChat")
+
+    def ir_para_admin(self):
+        if self.controller:
+            self.controller.show_frame("Admin")
 
     def logout(self):
         messagebox.showinfo("Logout", "Logout realizado")

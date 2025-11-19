@@ -4,7 +4,7 @@ from schemas.protetor import Protetor
 
 class ProtetorDAO:
     @staticmethod
-    def create(protetor: Protetor) -> None:
+    def create(protetor: Protetor) -> Protetor:
         conn = MYSQLConnection.get_connection()
         cursor = conn.cursor()
         sql = """
@@ -17,7 +17,12 @@ class ProtetorDAO:
                 protetor.senha, protetor.endereco, protetor.tipo
             ))
             conn.commit()
+            # Pegar o ID gerado
+            protetor_id = cursor.lastrowid
+            # Retornar protetor com ID preenchido
+            protetor.id = protetor_id
             print("Protetor criado com sucesso!")
+            return protetor
         except Exception as e:
             raise CustomException(f"Erro ao criar Protetor: {e}")
         finally: 

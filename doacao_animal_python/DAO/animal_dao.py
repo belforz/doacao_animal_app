@@ -5,7 +5,7 @@ from schemas.animal import Animal
 
 class AnimalDAO:
     @staticmethod
-    def create(animal: Animal) -> None:
+    def create(animal: Animal) -> Animal:
         conn = MYSQLConnection.get_connection()
         cursor = conn.cursor()
         sql = """
@@ -19,7 +19,12 @@ class AnimalDAO:
                 animal.sexo, animal.status, animal.protetor.id
             ))
             conn.commit()
+            # Pegar o ID gerado
+            animal_id = cursor.lastrowid
+            # Retornar animal com ID preenchido
+            animal.idAnimal = animal_id
             print("Animal criado com sucesso!")
+            return animal
         except Exception as e:
             raise CustomException(f"Erro ao criar Animal: {e}")
         finally:

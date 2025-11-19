@@ -2,7 +2,7 @@ package schemas;
 
 public abstract class Pessoa {
 
-    private int id;
+    private Integer id;
     private String nome;
     private String email;
     private String documento;
@@ -25,7 +25,7 @@ public abstract class Pessoa {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

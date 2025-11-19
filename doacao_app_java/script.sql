@@ -710,3 +710,75 @@ INSERT INTO SuportePosAdocao (dataRegistro, tipoSolicitacao, descricao, idAdocao
 ('2024-09-10 10:00:00', 'Dúvidas', 'Treinamento', 18),
 ('2024-10-10 11:00:00', 'Suporte', 'Saúde', 19),
 ('2024-11-10 12:00:00', 'Acompanhamento', 'Adaptação', 20);
+
+-- ============================================================
+-- CONSULTAS DQL COM JOINS
+-- ============================================================
+
+-- 3 Consultas usando INNER JOIN
+
+-- 1. Lista completa de animais adotados com informações do adotante e protetor
+SELECT a.idAnimal, a.nome AS nome_animal, a.especie, a.raca, a.idade, a.sexo, adt.nome AS nome_adotante, adt.email AS email_adotante, adt.telefone AS telefone_adotante, p.nome AS nome_protetor, p.email AS email_protetor, pa.status AS status_processo, ado.dataAdocao, ado.descricao AS descricao_adocao
+FROM Animal a
+INNER JOIN ProcessoAdocao pa ON a.idAnimal = pa.id_animal
+INNER JOIN Adotante adt ON pa.id_adotante = adt.idAdotante
+INNER JOIN Protetor p ON a.id_protetor = p.idProtetor
+INNER JOIN Adocao ado ON pa.idPAdocao = ado.id_processo
+ORDER BY ado.dataAdocao DESC;
+
+-- 2. Processos de adoção ativos com detalhes completos do animal e adotante
+SELECT pa.idPAdocao, pa.status, pa.dataInicio, a.nome AS nome_animal, a.especie, a.raca, a.temperamento, a.idade, adt.nome AS nome_adotante, adt.email AS email_adotante, adt.preferenciaAdocao, COUNT(m.idMensagem) AS total_mensagens, COUNT(ep.id) AS total_etapas
+FROM ProcessoAdocao pa
+INNER JOIN Animal a ON pa.id_animal = a.idAnimal
+INNER JOIN Adotante adt ON pa.id_adotante = adt.idAdotante
+LEFT JOIN Mensagem m ON pa.idPAdocao = m.id_processo
+LEFT JOIN EtapaProcesso ep ON pa.idPAdocao = ep.id_processo
+WHERE pa.status NOT IN ('CONCLUIDO', 'ENCERRADO')
+GROUP BY pa.idPAdocao, pa.status, pa.dataInicio, a.nome, a.especie, a.raca, a.temperamento, a.idade, adt.nome, adt.email, adt.preferenciaAdocao
+ORDER BY pa.dataInicio DESC;
+
+-- 3. Histórico de mensagens por processo de adoção
+SELECT pa.idPAdocao, pa.status AS status_processo, a.nome AS nome_animal, adt.nome AS nome_adotante, p.nome AS nome_protetor, m.dataMensagem, m.conteudo, CASE WHEN m.tipoRemetente = 'adotante' THEN adt.nome WHEN m.tipoRemetente = 'protetor' THEN p.nome ELSE 'Sistema' END AS remetente, m.tipoRemetente, m.tipoDestinatario
+FROM ProcessoAdocao pa
+INNER JOIN Animal a ON pa.id_animal = a.idAnimal
+INNER JOIN Adotante adt ON pa.id_adotante = adt.idAdotante
+INNER JOIN Protetor p ON a.id_protetor = p.idProtetor
+INNER JOIN Mensagem m ON pa.idPAdocao = m.id_processo
+ORDER BY pa.idPAdocao, m.dataMensagem;
+
+-- 3 Consultas usando LEFT OUTER JOIN (algumas como views)
+
+-- 1. View: Animais disponíveis (não adotados) com informações dos protetores
+CREATE VIEW animais_disponiveis AS
+SELECT a.idAnimal, a.nome AS nome_animal, a.especie, a.raca, a.temperamento, a.idade, a.sexo, a.status, p.nome AS nome_protetor, p.email AS email_protetor, p.telefone AS telefone_protetor, COUNT(fa.idFotoAnimal) AS total_fotos
+FROM Animal a
+LEFT OUTER JOIN ProcessoAdocao pa ON a.idAnimal = pa.id_animal
+LEFT OUTER JOIN Adocao ado ON pa.idPAdocao = ado.id_processo
+INNER JOIN Protetor p ON a.id_protetor = p.idProtetor
+LEFT OUTER JOIN FotoAnimal fa ON a.idAnimal = fa.idAnimal
+WHERE ado.idAdocao IS NULL
+GROUP BY a.idAnimal, a.nome, a.especie, a.raca, a.temperamento, a.idade, a.sexo, a.status, p.nome, p.email, p.telefone;
+
+-- Consulta usando a view
+SELECT * FROM animais_disponiveis ORDER BY nome_animal;
+
+-- 2. View: Estatísticas de protetores com seus animais (mesmo protetores sem animais)
+CREATE VIEW estatisticas_protetores AS
+SELECT p.idProtetor, p.nome AS nome_protetor, p.tipo, p.email, COUNT(a.idAnimal) AS total_animais, COUNT(CASE WHEN a.status = 'Disponível' THEN 1 END) AS animais_disponiveis, COUNT(CASE WHEN ado.idAdocao IS NOT NULL THEN 1 END) AS animais_adotados, AVG(a.idade) AS idade_media_animais
+FROM Protetor p
+LEFT OUTER JOIN Animal a ON p.idProtetor = a.id_protetor
+LEFT OUTER JOIN ProcessoAdocao pa ON a.idAnimal = pa.id_animal
+LEFT OUTER JOIN Adocao ado ON pa.idPAdocao = ado.id_processo
+GROUP BY p.idProtetor, p.nome, p.tipo, p.email
+ORDER BY total_animais DESC;
+
+-- Consulta usando a view
+SELECT * FROM estatisticas_protetores;
+
+-- 3. Adotantes com processos de adoção (mesmo adotantes sem processos ativos)
+SELECT adt.idAdotante, adt.nome AS nome_adotante, adt.email, adt.preferenciaAdocao, COUNT(pa.idPAdocao) AS total_processos, COUNT(CASE WHEN pa.status = 'APROVADO' THEN 1 END) AS processos_aprovados, COUNT(CASE WHEN pa.status = 'CONCLUIDO' THEN 1 END) AS processos_concluidos, COUNT(CASE WHEN ado.idAdocao IS NOT NULL THEN 1 END) AS adocoes_realizadas, MAX(pa.dataInicio) AS ultimo_processo
+FROM Adotante adt
+LEFT OUTER JOIN ProcessoAdocao pa ON adt.idAdotante = pa.id_adotante
+LEFT OUTER JOIN Adocao ado ON pa.idPAdocao = ado.id_processo
+GROUP BY adt.idAdotante, adt.nome, adt.email, adt.preferenciaAdocao
+ORDER BY total_processos DESC, nome_adotante;
