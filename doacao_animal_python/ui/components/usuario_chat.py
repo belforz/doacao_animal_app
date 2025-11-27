@@ -187,7 +187,6 @@ class UsuarioChat(tk.Frame):
                     return
 
             conv = ChatDAO.get_conversation(id_sender, id_dest, id_processo)
-            # display using bubble widgets
             self.display_messages(conv, id_sender)
         except CustomException as e:
             messagebox.showerror("Erro", f"Erro ao carregar conversa: {e}")
@@ -218,7 +217,6 @@ class UsuarioChat(tk.Frame):
                     return
 
             ChatDAO.send_message(id_sender, id_dest, conteudo, tipo_remetente=tipo_rem, tipo_destinatario=tipo_dest, id_processo=id_processo)
-            # reload conversation to include the new message
             self.entry_message.delete(0, tk.END)
             self.load_conversation()
         except CustomException as e:

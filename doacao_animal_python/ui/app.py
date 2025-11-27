@@ -17,7 +17,6 @@ class App:
     def __init__(self, root):
         self.root = root
         self.root.title("Doação de Animais")
-        # Give the app a larger default window so chat fits comfortably
         self.root.geometry("1000x700")
 
         # Dicionário para armazenar frames

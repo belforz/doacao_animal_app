@@ -46,7 +46,6 @@ class ChatDAO:
             rows = cursor.fetchall()
             messages = []
             for row in rows:
-                # build Mensagem with optional fields
                 messages.append(Mensagem(
                     idMensagem=row.get('idMensagem'),
                     dataMensagem=row.get('dataMensagem'),

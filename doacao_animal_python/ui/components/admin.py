@@ -267,7 +267,7 @@ class AdminFrame(tk.Frame):
         fields = [
             ("ID:", "id_adocao", "entry"),
             ("Data Adocao:", "data_adocao", "entry"),
-            ("Descricao:", "descricao_adocao", "entry"),
+            ("Descricao:", "descricao_adocao", "combo"),
             ("Termos:", "termos_adocao", "entry"),
             ("ID Processo:", "id_processo_adocao", "entry")
         ]
@@ -276,9 +276,14 @@ class AdminFrame(tk.Frame):
         for i, (label_text, key, widget_type) in enumerate(fields):
             label = ttk.Label(tab, text=label_text, style='Label.TLabel')
             label.grid(row=i, column=0, sticky="w", padx=5, pady=5)
-            entry = ttk.Entry(tab, width=30)
-            entry.grid(row=i, column=1, padx=5, pady=5)
-            self.adocao_entries[key] = entry
+            if widget_type == "combo":
+                combo = ttk.Combobox(tab, values=[s.value for s in StatusProcesso], width=27)
+                combo.grid(row=i, column=1, padx=5, pady=5)
+                self.adocao_entries[key] = combo
+            else:  # entry
+                entry = ttk.Entry(tab, width=30)
+                entry.grid(row=i, column=1, padx=5, pady=5)
+                self.adocao_entries[key] = entry
 
         # Botões
         buttons_frame = ttk.Frame(tab, style='Card.TFrame')
@@ -399,6 +404,11 @@ class AdminFrame(tk.Frame):
                     return
                 data_adocao = datetime.strptime(data_adocao_str, '%d-%m-%Y').date()
                 adocao = Adocao(None, data_adocao, descricao, termos, processo, id_processo)
+                try:
+                    status = StatusProcesso(descricao)
+                    adocao.mudarStatus(status)
+                except ValueError:
+                    pass
                 adocao = self.adocao_dao.create(adocao)
                 self.adocao_entries["id_adocao"].delete(0, tk.END)
                 self.adocao_entries["id_adocao"].insert(0, str(adocao.idAdocao))
@@ -523,6 +533,11 @@ class AdminFrame(tk.Frame):
                 adocao.termos = termos
                 adocao.processoAdocao = processo
                 adocao.id_processo = id_processo
+                try:
+                    status = StatusProcesso(descricao)
+                    adocao.mudarStatus(status)
+                except ValueError:
+                    pass
                 self.adocao_dao.update(adocao)
                 messagebox.showinfo("Sucesso", "Adoção atualizada!")
         except Exception as e:
@@ -653,8 +668,7 @@ class AdminFrame(tk.Frame):
                     if adocao:
                         self.adocao_entries["data_adocao"].delete(0, tk.END)
                         self.adocao_entries["data_adocao"].insert(0, adocao.dataAdocao.strftime('%d-%m-%Y'))
-                        self.adocao_entries["descricao_adocao"].delete(0, tk.END)
-                        self.adocao_entries["descricao_adocao"].insert(0, adocao.descricao)
+                        self.adocao_entries["descricao_adocao"].set(adocao.descricao)
                         self.adocao_entries["termos_adocao"].delete(0, tk.END)
                         self.adocao_entries["termos_adocao"].insert(0, adocao.termos)
                         self.adocao_entries["id_processo_adocao"].delete(0, tk.END)
@@ -751,9 +765,11 @@ class AdminFrame(tk.Frame):
                 widget.set("")
 
     def clear_adocao(self):
-        for entry in self.adocao_entries.values():
-            if isinstance(entry, ttk.Entry):
-                entry.delete(0, tk.END)
+        for widget in self.adocao_entries.values():
+            if isinstance(widget, ttk.Entry):
+                widget.delete(0, tk.END)
+            elif isinstance(widget, ttk.Combobox):
+                widget.set("")
 
     def logout(self):
         # Simular logout - voltar para login
