@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime as dt
+from datetime import date as dt
 from typing import List
 
 from .adotante import Adotante

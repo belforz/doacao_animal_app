@@ -23,7 +23,7 @@ public class AnimalDAO {
     // CREATE: Inserir um novo Animal
     public void create(Animal animal) throws CustomException {
         String sql = "INSERT INTO Animal (especie, raca, temperamento, historicoSaude, nome, descricao, esEspecial, idade, sexo, status, id_protetor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, animal.getEspecie());
             stmt.setString(2, animal.getRaca());
             stmt.setString(3, animal.getTemperamento());
@@ -36,6 +36,11 @@ public class AnimalDAO {
             stmt.setString(10, animal.getStatus());
             stmt.setInt(11, animal.getProtetor().getId());
             stmt.executeUpdate();
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    animal.setId(rs.getInt(1));
+                }
+            }
             System.out.println("Animal criado com sucesso!");
         } catch (SQLException e) {
             throw new CustomException("Erro ao criar Animal", e);

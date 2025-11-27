@@ -62,8 +62,10 @@ class WelcomeFrame(tk.Frame):
         
         if "Protetor" == tipoUsuario:
             self.label_especifico.config(text="Tipo: ")
-        else:
+        elif "Adotante" == tipoUsuario:
             self.label_especifico.config(text="Preferência de Adoção:")
+        else:
+            self.label_especifico.config(text="")  # For Admin or others
             
 
         # Botões
@@ -73,7 +75,7 @@ class WelcomeFrame(tk.Frame):
         self.button_ver_mensagens = ttk.Button(painel, text="Ver Mensagens", style='Accent.TButton', command=self.ver_mensagens)
         self.button_ver_mensagens.grid(row=7, column=3, pady=10)
 
-        if self.tipoUsuario == "Protetor":
+        if self.tipoUsuario == "Admin":
             self.button_admin = ttk.Button(painel, text="Admin", style='Accent.TButton', command=self.ir_para_admin)
             self.button_admin.grid(row=7, column=4, pady=10)
 
@@ -118,10 +120,11 @@ class WelcomeFrame(tk.Frame):
             self.entry_endereco.insert(0, usuario_dados.get("endereco", ""))
             self.entry_endereco.config(state="readonly")
 
-            especifico_key = "preferenciaAdocao" if self.tipoUsuario == "Adotante" else "tipo"
+            especifico_key = "preferenciaAdocao" if self.tipoUsuario == "Adotante" else ("tipo" if self.tipoUsuario == "Protetor" else None)
             self.entry_especifico.config(state="normal")
             self.entry_especifico.delete(0, tk.END)
-            self.entry_especifico.insert(0, usuario_dados.get(especifico_key, ""))
+            if especifico_key:
+                self.entry_especifico.insert(0, usuario_dados.get(especifico_key, ""))
             self.entry_especifico.config(state="readonly")
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao preencher dados: {e}")

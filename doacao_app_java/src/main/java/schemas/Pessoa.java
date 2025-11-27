@@ -1,6 +1,6 @@
 package schemas;
 
-public abstract class Pessoa {
+public abstract class Pessoa { //extend
 
     private Integer id;
     private String nome;

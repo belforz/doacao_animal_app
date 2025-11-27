@@ -34,39 +34,221 @@ public class Welcome extends JFrame {
         this.tipoUsuario = tipoUsuario;
         this.usuario = usuario;
 
-        // Garantir que os componentes existam — inicializa programaticamente se o .form não for carregado
-        if (painelPrincipal == null) {
-            initComponents();
-        }
-
-        // Configuração da janela
-        setTitle("Sistema de Adoção Animal - Bem-vindo");
+        // Inicializar painel principal
+        painelPrincipal = new JPanel(new GridBagLayout());
         setContentPane(painelPrincipal);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        pack();
-        setResizable(false);
+        setSize(550, 450);
         setLocationRelativeTo(null); // Centraliza na tela
+
+        // Inicializar componentes
+        labelBoasVindas = new JLabel("Bem-vindo!");
+        labelBoasVindas.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        labelBoasVindas.setForeground(Color.BLACK);
+        labelBoasVindas.setHorizontalAlignment(SwingConstants.CENTER);
+
+        labelNome = new JLabel("Nome:");
+        labelNome.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        labelNome.setForeground(Color.BLACK);
+
+        textFieldNome = new JTextField();
+        textFieldNome.setBackground(Color.WHITE);
+        textFieldNome.setEditable(false);
+        textFieldNome.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+
+        labelEmail = new JLabel("Email:");
+        labelEmail.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        labelEmail.setForeground(Color.BLACK);
+
+        textFieldEmail = new JTextField();
+        textFieldEmail.setBackground(Color.WHITE);
+        textFieldEmail.setEditable(false);
+        textFieldEmail.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+
+        labelDocumento = new JLabel("Documento:");
+        labelDocumento.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        labelDocumento.setForeground(Color.BLACK);
+
+        textFieldDocumento = new JTextField();
+        textFieldDocumento.setBackground(Color.WHITE);
+        textFieldDocumento.setEditable(false);
+        textFieldDocumento.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+
+        labelTelefone = new JLabel("Telefone:");
+        labelTelefone.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        labelTelefone.setForeground(Color.BLACK);
+
+        textFieldTelefone = new JTextField();
+        textFieldTelefone.setBackground(Color.WHITE);
+        textFieldTelefone.setEditable(false);
+        textFieldTelefone.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+
+        labelEndereco = new JLabel("Endereço:");
+        labelEndereco.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        labelEndereco.setForeground(Color.BLACK);
+
+        textFieldEndereco = new JTextField();
+        textFieldEndereco.setBackground(Color.WHITE);
+        textFieldEndereco.setEditable(false);
+        textFieldEndereco.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+
+        labelEspecifico = new JLabel("Preferência:");
+        labelEspecifico.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        labelEspecifico.setForeground(Color.BLACK);
+
+        textFieldEspecifico = new JTextField();
+        textFieldEspecifico.setBackground(Color.WHITE);
+        textFieldEspecifico.setEditable(false);
+        textFieldEspecifico.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+
+        buttonVerAnimais = new JButton("Ver Animais");
+        buttonVerAnimais.setBackground(new Color(0, 123, 255));
+        buttonVerAnimais.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        buttonVerAnimais.setForeground(Color.WHITE);
+
+        buttonVerProcessos = new JButton("Ver Processos");
+        buttonVerProcessos.setBackground(new Color(0, 123, 255));
+        buttonVerProcessos.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        buttonVerProcessos.setForeground(Color.WHITE);
+
+        buttonLogout = new JButton("Sair");
+        buttonLogout.setBackground(Color.RED);
+        buttonLogout.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        buttonLogout.setForeground(Color.WHITE);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        // Adicionar labelBoasVindas
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.gridwidth = 4;
+        gbc.gridheight = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(20, 10, 10, 40);
+        painelPrincipal.add(labelBoasVindas, gbc);
+
+        // Adicionar labelNome
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(10, 40, 10, 10);
+        painelPrincipal.add(labelNome, gbc);
+
+        // Adicionar textFieldNome
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        gbc.gridwidth = 3;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 40);
+        painelPrincipal.add(textFieldNome, gbc);
+
+        // Adicionar labelEmail
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(10, 40, 10, 10);
+        painelPrincipal.add(labelEmail, gbc);
+
+        // Adicionar textFieldEmail
+        gbc.gridx = 2;
+        gbc.gridy = 2;
+        gbc.gridwidth = 3;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 40);
+        painelPrincipal.add(textFieldEmail, gbc);
+
+        // Adicionar labelDocumento
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(10, 40, 10, 10);
+        painelPrincipal.add(labelDocumento, gbc);
+
+        // Adicionar textFieldDocumento
+        gbc.gridx = 2;
+        gbc.gridy = 3;
+        gbc.gridwidth = 3;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 40);
+        painelPrincipal.add(textFieldDocumento, gbc);
+
+        // Adicionar labelTelefone
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(10, 40, 10, 10);
+        painelPrincipal.add(labelTelefone, gbc);
+
+        // Adicionar textFieldTelefone
+        gbc.gridx = 2;
+        gbc.gridy = 4;
+        gbc.gridwidth = 3;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 40);
+        painelPrincipal.add(textFieldTelefone, gbc);
+
+        // Adicionar labelEndereco
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(10, 40, 10, 10);
+        painelPrincipal.add(labelEndereco, gbc);
+
+        // Adicionar textFieldEndereco
+        gbc.gridx = 2;
+        gbc.gridy = 5;
+        gbc.gridwidth = 3;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 40);
+        painelPrincipal.add(textFieldEndereco, gbc);
+
+        // Adicionar labelEspecifico
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(10, 40, 10, 10);
+        painelPrincipal.add(labelEspecifico, gbc);
+
+        // Adicionar textFieldEspecifico
+        gbc.gridx = 2;
+        gbc.gridy = 6;
+        gbc.gridwidth = 3;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 40);
+        painelPrincipal.add(textFieldEspecifico, gbc);
+
+        // Adicionar buttonVerAnimais
+        gbc.gridx = 2;
+        gbc.gridy = 7;
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        painelPrincipal.add(buttonVerAnimais, gbc);
+
+        // Adicionar buttonVerProcessos
+        gbc.gridx = 3;
+        gbc.gridy = 7;
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        painelPrincipal.add(buttonVerProcessos, gbc);
+
+        // Adicionar buttonLogout
+        gbc.gridx = 2;
+        gbc.gridy = 8;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 20, 40);
+        painelPrincipal.add(buttonLogout, gbc);
 
         // Configurar cor de fundo do painel
         painelPrincipal.setBackground(new Color(160, 160, 160)); // Cinza
-
-        // Configurar cores dos labels
-        labelBoasVindas.setForeground(Color.BLACK);
-        labelNome.setForeground(Color.BLACK);
-        labelEmail.setForeground(Color.BLACK);
-        labelDocumento.setForeground(Color.BLACK);
-        labelTelefone.setForeground(Color.BLACK);
-        labelEndereco.setForeground(Color.BLACK);
-        labelEspecifico.setForeground(Color.BLACK);
-
-        // Configurar cores dos text fields
-        textFieldNome.setBackground(Color.WHITE);
-        textFieldEmail.setBackground(Color.WHITE);
-        textFieldDocumento.setBackground(Color.WHITE);
-        textFieldTelefone.setBackground(Color.WHITE);
-        textFieldEndereco.setBackground(Color.WHITE);
-        textFieldEspecifico.setBackground(Color.WHITE);
-
 
         // Configurar label específico baseado no tipo de usuário
         if ("Protetor".equals(tipoUsuario)) {

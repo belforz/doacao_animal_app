@@ -145,7 +145,7 @@ class Login(tk.Frame):
                 admin = cursor.fetchone()
                 if admin:
                     messagebox.showinfo("Sucesso", "Login realizado com sucesso como Admin!")
-                    self.controller.show_frame("Admin")
+                    self.controller.show_frame("Welcome", tipoUsuario="Admin", usuario={"nome": admin[1], "email": email, "documento": admin[2], "telefone": admin[3], "endereco": admin[4]})
                     return
                 else:
                     messagebox.showerror("Erro de Login", "Email ou senha incorretos para o tipo selecionado!")

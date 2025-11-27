@@ -184,6 +184,15 @@ public class Admin extends JFrame {
                 ProtetorDAO dao = new ProtetorDAO();
                 dao.delete(id);
                 JOptionPane.showMessageDialog(this, "Protetor deletado com sucesso!");
+                // Limpar campos automaticamente
+                textFieldIdProtetor.setText("");
+                textFieldNomeProtetor.setText("");
+                textFieldEmailProtetor.setText("");
+                textFieldDocumentoProtetor.setText("");
+                textFieldTelefoneProtetor.setText("");
+                textFieldEnderecoProtetor.setText("");
+                textFieldSenhaProtetor.setText("");
+                textFieldTipoProtetor.setText("");
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
@@ -272,6 +281,15 @@ public class Admin extends JFrame {
                 AdotanteDAO dao = new AdotanteDAO();
                 dao.delete(id);
                 JOptionPane.showMessageDialog(this, "Adotante deletado com sucesso!");
+                // Limpar campos automaticamente
+                textFieldIdAdotante.setText("");
+                textFieldNomeAdotante.setText("");
+                textFieldEmailAdotante.setText("");
+                textFieldDocumentoAdotante.setText("");
+                textFieldTelefoneAdotante.setText("");
+                textFieldEnderecoAdotante.setText("");
+                textFieldSenhaAdotante.setText("");
+                textFieldPreferenciaAdotante.setText("");
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
@@ -369,6 +387,19 @@ public class Admin extends JFrame {
                 AnimalDAO dao = new AnimalDAO();
                 dao.delete(id);
                 JOptionPane.showMessageDialog(this, "Animal deletado com sucesso!");
+                // Limpar campos automaticamente
+                textFieldIdAnimal.setText("");
+                textFieldNomeAnimal.setText("");
+                textFieldEspecieAnimal.setText("");
+                textFieldRacaAnimal.setText("");
+                textFieldTemperamentoAnimal.setText("");
+                textFieldHistoricoSaudeAnimal.setText("");
+                textFieldDescricaoAnimal.setText("");
+                checkBoxEspecialAnimal.setSelected(false);
+                textFieldIdadeAnimal.setText("");
+                comboBoxSexoAnimal.setSelectedIndex(0);
+                textFieldStatusAnimal.setText("");
+                textFieldIdProtetorAnimal.setText("");
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }

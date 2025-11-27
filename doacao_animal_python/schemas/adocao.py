@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
-from datetime import datetime as dt
-from typing import List
+from datetime import date as dt
+from typing import List, Optional
 import time
 
 from .processo_adocao import ProcessoAdocao
@@ -12,6 +12,6 @@ class Adocao:
     dataAdocao: dt
     descricao: str
     termos: str
-    processoAdocao: ProcessoAdocao
+    processoAdocao: Optional[ProcessoAdocao]
     id_processo: int
     suportes: List[SuportePosAdocao] = field(default_factory=list)

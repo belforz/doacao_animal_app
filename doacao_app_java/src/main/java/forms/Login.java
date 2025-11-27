@@ -20,21 +20,111 @@ public class Login extends JFrame {
     public Login() {
         // Configuração da janela
         setTitle("Sistema de Adoção Animal - Login");
+        painelPrincipal = new JPanel(new GridBagLayout());
         setContentPane(painelPrincipal);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(450, 400);
         setLocationRelativeTo(null); // Centraliza na tela
 
+        // Inicializar componentes
+        labelLogo = new JLabel("");
+        try {
+            labelLogo.setIcon(new ImageIcon(getClass().getResource("/logo (1).jpg")));
+        } catch (Exception e) {
+            // Icon not found
+        }
+        labelEmail = new JLabel("Email:");
+        labelEmail.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        labelEmail.setForeground(Color.BLACK);
+        textFieldEmail = new JTextField();
+        textFieldEmail.setBackground(Color.WHITE);
+        textFieldEmail.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        labelSenha = new JLabel("Senha:");
+        labelSenha.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        labelSenha.setForeground(Color.BLACK);
+        passwordFieldSenha = new JPasswordField();
+        passwordFieldSenha.setBackground(Color.WHITE);
+        passwordFieldSenha.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        comboBoxTipo = new JComboBox();
+        buttonLogin = new JButton("Entrar");
+        buttonLogin.setBackground(new Color(0, 123, 255));
+        buttonLogin.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        buttonLogin.setForeground(Color.WHITE);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        // Adicionar labelLogo
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        gbc.gridheight = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0;
+        gbc.weighty = 0;
+        gbc.insets = new Insets(20, 40, 10, 40);
+        painelPrincipal.add(labelLogo, gbc);
+
+        // Adicionar labelEmail
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(10, 40, 10, 10);
+        painelPrincipal.add(labelEmail, gbc);
+
+        // Adicionar textFieldEmail
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 40);
+        painelPrincipal.add(textFieldEmail, gbc);
+
+        // Adicionar labelSenha
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(10, 40, 10, 10);
+        painelPrincipal.add(labelSenha, gbc);
+
+        // Adicionar passwordFieldSenha
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 40);
+        painelPrincipal.add(passwordFieldSenha, gbc);
+
+        // Adicionar labelTipo
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(10, 40, 10, 10);
+        JLabel labelTipo = new JLabel("Tipo");
+        labelTipo.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        labelTipo.setForeground(Color.BLACK);
+        painelPrincipal.add(labelTipo, gbc);
+
+        // Adicionar comboBoxTipo
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 40);
+        painelPrincipal.add(comboBoxTipo, gbc);
+
+        // Adicionar buttonLogin
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 20, 40);
+        painelPrincipal.add(buttonLogin, gbc);
+
         // Configurar cor de fundo do painel
         painelPrincipal.setBackground(new Color(160, 160, 160)); // Cinza
-
-        // Configurar cores dos labels
-        labelEmail.setForeground(Color.BLACK);
-        labelSenha.setForeground(Color.BLACK);
-
-        // Configurar cores dos text fields
-        textFieldEmail.setBackground(Color.WHITE);
-        passwordFieldSenha.setBackground(Color.WHITE);
 
         labelLogo.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -66,7 +156,7 @@ public class Login extends JFrame {
         String tipoSelecionado = (String) comboBoxTipo.getSelectedItem();
 
         if ("Admin".equals(tipoSelecionado)) {
-            if (email.equals("admin@email.com") && senha.equals("admin")) {
+            if (email.equals("adm@email.com")) {
                 JOptionPane.showMessageDialog(this,
                     "Login realizado com sucesso como ADMIN!",
                     "Sucesso",

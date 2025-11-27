@@ -15,7 +15,7 @@ public class Animal {
     private Integer idade;
     private Character sexo;
     private String status;
-    private Protetor protetor;
+    private Protetor protetor; // agregação de Protetor
     private List<FotoAnimal> fotoAnimal = new ArrayList<>();
 
     public Animal(Integer idAnimal, String especie, String raca, String temperamento, String historicoSaude, String nome, String descricao, boolean esEspecial, int idade, char sexo, String status, int idProtetor) {

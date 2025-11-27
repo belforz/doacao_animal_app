@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import os
 import sys
+from datetime import datetime, date
 
 project_root = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
 if project_root not in sys.path:
@@ -10,9 +11,14 @@ if project_root not in sys.path:
 from schemas.protetor import Protetor
 from schemas.adotante import Adotante
 from schemas.animal import Animal
+from schemas.processo_adocao import ProcessoAdocao
+from schemas.adocao import Adocao
+from schemas.status_processo import StatusProcesso
 from DAO.adotante_dao import AdotanteDAO
 from DAO.animal_dao import AnimalDAO
 from DAO.protetor_dao import ProtetorDAO
+from DAO.processo_adocao_dao import ProcessoAdocaoDAO
+from DAO.adocao_dao import AdocaoDAO
 from exceptions.custom_exception import CustomException
 
 
@@ -52,6 +58,13 @@ class AdminFrame(tk.Frame):
         # Aba Animal
         self.create_animal_tab()
 
+        # Aba Processo Adocao
+        self.create_processo_adocao_tab()
+
+        # Aba Adocao
+        self.create_adocao_tab()
+        
+
         # Botão Sair
         logout_button = ttk.Button(self, text="Sair", command=self.logout, style='Accent.TButton')
         logout_button.pack(pady=10)
@@ -60,6 +73,8 @@ class AdminFrame(tk.Frame):
         self.protetor_dao = ProtetorDAO()
         self.animal_dao = AnimalDAO()
         self.adotante_dao = AdotanteDAO()
+        self.processo_adocao_dao = ProcessoAdocaoDAO()
+        self.adocao_dao = AdocaoDAO()
 
     def create_protetor_tab(self):
         tab = ttk.Frame(self.notebook, style='Card.TFrame')
@@ -95,7 +110,8 @@ class AdminFrame(tk.Frame):
             ("Ler", self.ler_entidade),
             ("Atualizar", self.atualizar_entidade),
             ("Deletar", self.deletar_entidade),
-            ("Limpar", self.clear_protetor)
+            ("Limpar", self.clear_protetor),
+            ("Voltar", self.on_back)
         ]
 
         for i, (text, command) in enumerate(buttons):
@@ -136,7 +152,8 @@ class AdminFrame(tk.Frame):
             ("Ler", self.ler_entidade),
             ("Atualizar", self.atualizar_entidade),
             ("Deletar", self.deletar_entidade),
-            ("Limpar", self.clear_adotante)
+            ("Limpar", self.clear_adotante),
+            ("Voltar", self.on_back)
         ]
 
         for i, (text, command) in enumerate(buttons):
@@ -191,12 +208,97 @@ class AdminFrame(tk.Frame):
             ("Ler", self.ler_entidade),
             ("Atualizar", self.atualizar_entidade),
             ("Deletar", self.deletar_entidade),
-            ("Limpar", self.clear_animal)
+            ("Limpar", self.clear_animal),
+            ("Voltar", self.on_back)
         ]
 
         for i, (text, command) in enumerate(buttons):
             button = ttk.Button(buttons_frame, text=text, command=command, width=10, style='Accent.TButton')
             button.grid(row=0, column=i, padx=5)
+            
+    def create_processo_adocao_tab(self):
+        tab = ttk.Frame(self.notebook, style='Card.TFrame')
+        self.notebook.add(tab, text="Processo Adocao")
+
+        # Campos
+        fields = [
+            ("ID:", "id_processo_adocao", "entry"),
+            ("ID Animal:", "id_animal_processo", "entry"),
+            ("ID Adotante:", "id_adotante_processo", "entry"),
+            ("Status:", "status_processo", "combo"),
+            ("Data Inicio:", "data_inicio_processo", "entry")
+        ]
+
+        self.processo_adocao_entries = {}
+        for i, (label_text, key, widget_type) in enumerate(fields):
+            label = ttk.Label(tab, text=label_text, style='Label.TLabel')
+            label.grid(row=i, column=0, sticky="w", padx=5, pady=5)
+            if widget_type == "combo":
+                combo = ttk.Combobox(tab, values=[s.value for s in StatusProcesso], width=27)
+                combo.grid(row=i, column=1, padx=5, pady=5)
+                self.processo_adocao_entries[key] = combo
+            else:  # entry
+                entry = ttk.Entry(tab, width=30)
+                entry.grid(row=i, column=1, padx=5, pady=5)
+                self.processo_adocao_entries[key] = entry
+
+        # Botões
+        buttons_frame = ttk.Frame(tab, style='Card.TFrame')
+        buttons_frame.grid(row=len(fields), column=0, columnspan=2, pady=10)
+
+        buttons = [
+            ("Criar", self.criar_entidade),
+            ("Ler", self.ler_entidade),
+            ("Atualizar", self.atualizar_entidade),
+            ("Deletar", self.deletar_entidade),
+            ("Limpar", self.clear_processo_adocao),
+            ("Voltar", self.on_back)
+        ]
+
+        for i, (text, command) in enumerate(buttons):
+            button = ttk.Button(buttons_frame, text=text, command=command, width=10, style='Accent.TButton')
+            button.grid(row=0, column=i, padx=5)
+    
+    def create_adocao_tab(self):
+        tab = ttk.Frame(self.notebook, style='Card.TFrame')
+        self.notebook.add(tab, text="Adocao")
+
+        # Campos
+        fields = [
+            ("ID:", "id_adocao", "entry"),
+            ("Data Adocao:", "data_adocao", "entry"),
+            ("Descricao:", "descricao_adocao", "entry"),
+            ("Termos:", "termos_adocao", "entry"),
+            ("ID Processo:", "id_processo_adocao", "entry")
+        ]
+
+        self.adocao_entries = {}
+        for i, (label_text, key, widget_type) in enumerate(fields):
+            label = ttk.Label(tab, text=label_text, style='Label.TLabel')
+            label.grid(row=i, column=0, sticky="w", padx=5, pady=5)
+            entry = ttk.Entry(tab, width=30)
+            entry.grid(row=i, column=1, padx=5, pady=5)
+            self.adocao_entries[key] = entry
+
+        # Botões
+        buttons_frame = ttk.Frame(tab, style='Card.TFrame')
+        buttons_frame.grid(row=len(fields), column=0, columnspan=2, pady=10)
+
+        buttons = [
+            ("Criar", self.criar_entidade),
+            ("Ler", self.ler_entidade),
+            ("Atualizar", self.atualizar_entidade),
+            ("Deletar", self.deletar_entidade),
+            ("Limpar", self.clear_adocao),
+            ("Voltar", self.on_back)
+        ]
+
+        for i, (text, command) in enumerate(buttons):
+            button = ttk.Button(buttons_frame, text=text, command=command, width=10, style='Accent.TButton')
+            button.grid(row=0, column=i, padx=5)
+        
+        
+        
         
     def criar_entidade(self):
         entity_type = self.notebook.tab(self.notebook.select(), "text")
@@ -260,6 +362,47 @@ class AdminFrame(tk.Frame):
                 self.animal_entries["id_animal"].delete(0, tk.END)
                 self.animal_entries["id_animal"].insert(0, str(animal.idAnimal))
                 messagebox.showinfo("Sucesso", "Animal criado!")
+            elif entity_type == "Processo Adocao":
+                id_animal = int(self.processo_adocao_entries["id_animal_processo"].get() or 0)
+                id_adotante = int(self.processo_adocao_entries["id_adotante_processo"].get() or 0)
+                status_str = self.processo_adocao_entries["status_processo"].get()
+                data_inicio_str = self.processo_adocao_entries["data_inicio_processo"].get()
+                if not all([id_animal, id_adotante, status_str, data_inicio_str]):
+                    messagebox.showerror("Erro", "Preencha todos os campos.")
+                    return
+                animal = self.animal_dao.read(id_animal)
+                if not animal:
+                    messagebox.showerror("Erro", "Animal não encontrado.")
+                    return
+                adotante = self.adotante_dao.read(id_adotante)
+                if not adotante:
+                    messagebox.showerror("Erro", "Adotante não encontrado.")
+                    return
+                status = StatusProcesso(status_str)
+                data_inicio = datetime.strptime(data_inicio_str, '%d-%m-%Y').date()
+                processo = ProcessoAdocao(None, animal, adotante, status, data_inicio, id_animal, id_adotante)
+                processo = self.processo_adocao_dao.create(processo)
+                self.processo_adocao_entries["id_processo_adocao"].delete(0, tk.END)
+                self.processo_adocao_entries["id_processo_adocao"].insert(0, str(processo.idPAdocao))
+                messagebox.showinfo("Sucesso", "Processo de Adoção criado!")
+            elif entity_type == "Adocao":
+                data_adocao_str = self.adocao_entries["data_adocao"].get()
+                descricao = self.adocao_entries["descricao_adocao"].get()
+                termos = self.adocao_entries["termos_adocao"].get()
+                id_processo = int(self.adocao_entries["id_processo_adocao"].get() or 0)
+                if not all([data_adocao_str, descricao, termos, id_processo]):
+                    messagebox.showerror("Erro", "Preencha todos os campos.")
+                    return
+                processo = self.processo_adocao_dao.read(id_processo)
+                if not processo:
+                    messagebox.showerror("Erro", "Processo não encontrado.")
+                    return
+                data_adocao = datetime.strptime(data_adocao_str, '%d-%m-%Y').date()
+                adocao = Adocao(None, data_adocao, descricao, termos, processo, id_processo)
+                adocao = self.adocao_dao.create(adocao)
+                self.adocao_entries["id_adocao"].delete(0, tk.END)
+                self.adocao_entries["id_adocao"].insert(0, str(adocao.idAdocao))
+                messagebox.showinfo("Sucesso", "Adoção criada!")
         except Exception as e:
             messagebox.showerror("Erro", str(e))
     
@@ -329,6 +472,59 @@ class AdminFrame(tk.Frame):
                 animal.protetor = protetor
                 self.animal_dao.update(animal)
                 messagebox.showinfo("Sucesso", "Animal atualizado!")
+            elif entity_type == "Processo Adocao":
+                id_val = int(self.processo_adocao_entries["id_processo_adocao"].get() or 0)
+                if not id_val:
+                    messagebox.showerror("Erro", "ID necessário para atualizar.")
+                    return
+                processo = self.processo_adocao_dao.read(id_val)
+                if not processo:
+                    messagebox.showerror("Erro", "Processo não encontrado.")
+                    return
+                id_animal = int(self.processo_adocao_entries["id_animal_processo"].get() or 0)
+                id_adotante = int(self.processo_adocao_entries["id_adotante_processo"].get() or 0)
+                status_str = self.processo_adocao_entries["status_processo"].get()
+                data_inicio_str = self.processo_adocao_entries["data_inicio_processo"].get()
+                animal = self.animal_dao.read(id_animal)
+                if not animal:
+                    messagebox.showerror("Erro", "Animal não encontrado.")
+                    return
+                adotante = self.adotante_dao.read(id_adotante)
+                if not adotante:
+                    messagebox.showerror("Erro", "Adotante não encontrado.")
+                    return
+                processo.animal = animal
+                processo.adotante = adotante
+                processo.statusProcesso = StatusProcesso(status_str)
+                processo.dataInicio = datetime.strptime(data_inicio_str, '%d-%m-%Y').date()
+                processo.id_animal = id_animal
+                processo.id_adotante = id_adotante
+                self.processo_adocao_dao.update(processo)
+                messagebox.showinfo("Sucesso", "Processo de Adoção atualizado!")
+            elif entity_type == "Adocao":
+                id_val = int(self.adocao_entries["id_adocao"].get() or 0)
+                if not id_val:
+                    messagebox.showerror("Erro", "ID necessário para atualizar.")
+                    return
+                adocao = self.adocao_dao.read(id_val)
+                if not adocao:
+                    messagebox.showerror("Erro", "Adoção não encontrada.")
+                    return
+                data_adocao_str = self.adocao_entries["data_adocao"].get()
+                descricao = self.adocao_entries["descricao_adocao"].get()
+                termos = self.adocao_entries["termos_adocao"].get()
+                id_processo = int(self.adocao_entries["id_processo_adocao"].get() or 0)
+                processo = self.processo_adocao_dao.read(id_processo)
+                if not processo:
+                    messagebox.showerror("Erro", "Processo não encontrado.")
+                    return
+                adocao.dataAdocao = datetime.strptime(data_adocao_str, '%d-%m-%Y').date()
+                adocao.descricao = descricao
+                adocao.termos = termos
+                adocao.processoAdocao = processo
+                adocao.id_processo = id_processo
+                self.adocao_dao.update(adocao)
+                messagebox.showinfo("Sucesso", "Adoção atualizada!")
         except Exception as e:
             messagebox.showerror("Erro", str(e))
     
@@ -425,6 +621,47 @@ class AdminFrame(tk.Frame):
                         messagebox.showinfo("Sucesso", "Animal carregado!")
                     else:
                         messagebox.showerror("Erro", "Animal não encontrado.")
+            elif entity_type == "Processo Adocao":
+                entity_id_str = self.processo_adocao_entries["id_processo_adocao"].get().strip()
+                if not entity_id_str:
+                    processos = self.processo_adocao_dao.readAll()
+                    lista = "\n".join([f"ID: {p.idPAdocao} - Animal: {p.animal.nome} - Adotante: {p.adotante.nome}" for p in processos])
+                    messagebox.showinfo("Lista de Processos", lista if lista else "Nenhum processo encontrado.")
+                else:
+                    entity_id = int(entity_id_str)
+                    processo = self.processo_adocao_dao.read(entity_id)
+                    if processo:
+                        self.processo_adocao_entries["id_animal_processo"].delete(0, tk.END)
+                        self.processo_adocao_entries["id_animal_processo"].insert(0, str(processo.id_animal))
+                        self.processo_adocao_entries["id_adotante_processo"].delete(0, tk.END)
+                        self.processo_adocao_entries["id_adotante_processo"].insert(0, str(processo.id_adotante))
+                        self.processo_adocao_entries["status_processo"].set(processo.statusProcesso.value)
+                        self.processo_adocao_entries["data_inicio_processo"].delete(0, tk.END)
+                        self.processo_adocao_entries["data_inicio_processo"].insert(0, processo.dataInicio.strftime('%d-%m-%Y'))
+                        messagebox.showinfo("Sucesso", "Processo carregado!")
+                    else:
+                        messagebox.showerror("Erro", "Processo não encontrado.")
+            elif entity_type == "Adocao":
+                entity_id_str = self.adocao_entries["id_adocao"].get().strip()
+                if not entity_id_str:
+                    adocoes = self.adocao_dao.readAll()
+                    lista = "\n".join([f"ID: {a.idAdocao} - Data: {a.dataAdocao.strftime('%d-%m-%Y')}" for a in adocoes])
+                    messagebox.showinfo("Lista de Adoções", lista if lista else "Nenhuma adoção encontrada.")
+                else:
+                    entity_id = int(entity_id_str)
+                    adocao = self.adocao_dao.read(entity_id)
+                    if adocao:
+                        self.adocao_entries["data_adocao"].delete(0, tk.END)
+                        self.adocao_entries["data_adocao"].insert(0, adocao.dataAdocao.strftime('%d-%m-%Y'))
+                        self.adocao_entries["descricao_adocao"].delete(0, tk.END)
+                        self.adocao_entries["descricao_adocao"].insert(0, adocao.descricao)
+                        self.adocao_entries["termos_adocao"].delete(0, tk.END)
+                        self.adocao_entries["termos_adocao"].insert(0, adocao.termos)
+                        self.adocao_entries["id_processo_adocao"].delete(0, tk.END)
+                        self.adocao_entries["id_processo_adocao"].insert(0, str(adocao.id_processo))
+                        messagebox.showinfo("Sucesso", "Adoção carregada!")
+                    else:
+                        messagebox.showerror("Erro", "Adoção não encontrada.")
         except ValueError:
             messagebox.showerror("Erro", "ID deve ser um número válido.")
         except Exception as e:
@@ -463,6 +700,26 @@ class AdminFrame(tk.Frame):
                     self.animal_dao.delete(id_val)
                     messagebox.showinfo("Sucesso", "Animal deletado!")
                     self.clear_animal()
+            elif entity_type == "Processo Adocao":
+                id_val = int(self.processo_adocao_entries["id_processo_adocao"].get() or 0)
+                if not id_val:
+                    messagebox.showerror("Erro", "ID necessário para deletar.")
+                    return
+                resposta = messagebox.askyesno("Confirmação", "Deseja deletar este processo?")
+                if resposta:
+                    self.processo_adocao_dao.delete(id_val)
+                    messagebox.showinfo("Sucesso", "Processo deletado!")
+                    self.clear_processo_adocao()
+            elif entity_type == "Adocao":
+                id_val = int(self.adocao_entries["id_adocao"].get() or 0)
+                if not id_val:
+                    messagebox.showerror("Erro", "ID necessário para deletar.")
+                    return
+                resposta = messagebox.askyesno("Confirmação", "Deseja deletar esta adoção?")
+                if resposta:
+                    self.adocao_dao.delete(id_val)
+                    messagebox.showinfo("Sucesso", "Adoção deletada!")
+                    self.clear_adocao()
         except Exception as e:
             messagebox.showerror("Erro", str(e))
         
@@ -486,6 +743,23 @@ class AdminFrame(tk.Frame):
             elif isinstance(widget, ttk.Combobox):
                 widget.set("")
 
+    def clear_processo_adocao(self):
+        for key, widget in self.processo_adocao_entries.items():
+            if isinstance(widget, ttk.Entry):
+                widget.delete(0, tk.END)
+            elif isinstance(widget, ttk.Combobox):
+                widget.set("")
+
+    def clear_adocao(self):
+        for entry in self.adocao_entries.values():
+            if isinstance(entry, ttk.Entry):
+                entry.delete(0, tk.END)
+
     def logout(self):
         # Simular logout - voltar para login
         self.controller.show_frame("Login")
+        
+    def on_back(self):
+        if self.controller:
+            self.controller.show_frame("Welcome")
+        

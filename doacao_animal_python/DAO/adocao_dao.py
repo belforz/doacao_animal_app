@@ -5,7 +5,7 @@ from schemas.adocao import Adocao
 
 class AdocaoDAO:
     @staticmethod
-    def create(adocao: Adocao) -> None:
+    def create(adocao: Adocao) -> Adocao:
         conn = MYSQLConnection.get_connection()
         cursor = conn.cursor()
         sql = """
@@ -17,7 +17,9 @@ class AdocaoDAO:
                 adocao.dataAdocao, adocao.descricao, adocao.termos, adocao.id_processo
             ))
             conn.commit()
+            adocao.idAdocao = cursor.lastrowid
             print("Adoção criada com sucesso!")
+            return adocao
         except Exception as e:
             raise CustomException(f"Erro ao criar Adoção: {e}")
         finally:
@@ -36,7 +38,7 @@ class AdocaoDAO:
                 processo = ProcessoAdocaoDAO.read(row['id_processo'])
                 return Adocao(
                     idAdocao=row['idAdocao'],
-                    dataAdocao=row['dataAdocao'],
+                    dataAdocao=row['dataAdocao'].date(),
                     descricao=row['descricao'],
                     termos=row['termos'],
                     processoAdocao=processo,
@@ -59,8 +61,12 @@ class AdocaoDAO:
             rows = cursor.fetchall()
             return [
                 Adocao(
-                    id=row['idAdocao'], dataAdocao=row['dataAdocao'], descricao=row['descricao'],
-                    termos=row['termos'], id_processo=row['id_processo']
+                    idAdocao=row['idAdocao'],
+                    dataAdocao=row['dataAdocao'].date(),
+                    descricao=row['descricao'],
+                    termos=row['termos'],
+                    processoAdocao=None,
+                    id_processo=row['id_processo']
                 ) for row in rows
             ]
         except Exception as e:

@@ -5,7 +5,7 @@ from schemas.processo_adocao import ProcessoAdocao
 
 class ProcessoAdocaoDAO:
     @staticmethod
-    def create(processo_adocao: ProcessoAdocao) -> None:
+    def create(processo_adocao: ProcessoAdocao) -> ProcessoAdocao:
         conn = MYSQLConnection.get_connection()
         cursor = conn.cursor()
         sql = """
@@ -17,7 +17,9 @@ class ProcessoAdocaoDAO:
                 processo_adocao.id_animal, processo_adocao.id_adotante, processo_adocao.statusProcesso.value, processo_adocao.dataInicio
             ))
             conn.commit()
+            processo_adocao.idPAdocao = cursor.lastrowid
             print("Processo de adoção criado com sucesso!")
+            return processo_adocao
         except Exception as e:
             raise CustomException(f"Erro ao criar Processo de Adoção: {e}")
         finally:
@@ -44,7 +46,7 @@ class ProcessoAdocaoDAO:
                     animal=animal,
                     adotante=adotante,
                     statusProcesso=StatusProcesso(row['status']),
-                    dataInicio=row['dataInicio'],
+                    dataInicio=row['dataInicio'].date(),
                     id_animal=row['id_animal'],
                     id_adotante=row['id_adotante'],
                     etapas=etapas,
@@ -78,7 +80,7 @@ class ProcessoAdocaoDAO:
                     animal=animal,
                     adotante=adotante,
                     statusProcesso=StatusProcesso(row['status']),
-                    dataInicio=row['dataInicio'],
+                    dataInicio=row['dataInicio'].date(),
                     id_animal=row['id_animal'],
                     id_adotante=row['id_adotante'],
                     etapas=etapas,

@@ -1,6 +1,6 @@
 package schemas;
 
-public class Adotante extends Pessoa {
+public class Adotante extends Pessoa { // herança da classe Pessoa
     private String preferenciaAdocao;
 
     public String getPreferenciaAdocao() {

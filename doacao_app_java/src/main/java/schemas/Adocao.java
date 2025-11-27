@@ -4,12 +4,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Adocao {
+public class Adocao { // Esse objeto é uma composição de ProcessoAdocao e SuportePosAdocao
     private Integer idAdocao;
     private LocalDate dataAdocao;
     private String descricao;
     private String termos;
-    private ProcessoAdocao processo;
+    private ProcessoAdocao processo; 
     private List<SuportePosAdocao> suportes = new ArrayList<>();
     private Integer id_processo;
 
